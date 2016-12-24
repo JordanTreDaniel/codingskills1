@@ -1,1 +1,12 @@
-This is the courtside page.
+<div layout="row"> 
+    <div>
+        <span ng-show="!controller.typed">{{controller.currentWord}}</span>
+        <span ng-show="controller.typed">{{controller.typed}}{{controller.difference}}</span>
+    </div>
+    <div>
+        <input 
+            ng-change="controller.changeDifference()" 
+            ng-model="controller.typed" 
+            type="text">
+    </div>
+</div>
