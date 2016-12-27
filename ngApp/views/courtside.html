@@ -1,11 +1,22 @@
 <div layout="row"> 
     <div>
-        <span ng-show="!controller.typed">{{controller.currentWord}}</span>
-        <span ng-show="controller.typed">{{controller.typed}}{{controller.difference}}</span>
+        <span>This is the word you should be typing:</span>
+        <br>
+        <span>This is what you have typed:</span>
+        <br>
+        <span ng-show="controller.typed">What you typed + rest of the target word =</span>
+        <br>
     </div>
     <div>
+        <span>{{controller.currentWord}}</span>
+        <br>
+        <span>{{controller.typed}}</span>
+        <br>
+        <span ng-show="controller.typed">{{controller.typed}}{{controller.difference}}</span>
+        <br
+    <div>
         <input 
-            ng-change="controller.changeDifference()" 
+            ng-keyup="controller.keyDown($event)" 
             ng-model="controller.typed" 
             type="text">
     </div>
