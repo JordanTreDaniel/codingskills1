@@ -9,19 +9,34 @@ namespace codingskills.Controllers {
 
     }
     export class CourtsideController {
-        constructor(private $http: ng.IHttpService) {
-            this.getWords();
+        constructor(
+            private $http: ng.IHttpService,
+            private $state: ng.ui.IStateService
+            ) {
+                console.log('The state service is ', $state);
+                this.getWords();
         }
         public words = [];
         public currentWord;
         public typed;
         public difference;
         public i = 0;
+        public gameRunning = false;
         public statsObject = {
             mistakes: 0,
             wordsTyped: 0,
             keysTyped: 0,
             errorRate: 0
+        }
+        public runGame() {
+            if(this.statsObject.wordsTyped == 0 && this.typed == 1 && !this.gameRunning) {
+                this.gameRunning = true;
+                console.log('game started? ', this.gameRunning);
+                let game = window.setTimeout(() => {
+                    console.log("I wanted to use the state obj", this.$state);
+                    this.$state.go('lockerroom', this.statsObject);
+                        }, 15000);
+            }
         }
         public getWords() {
             let pattern = '[s]';
@@ -29,7 +44,6 @@ namespace codingskills.Controllers {
                         + pattern)
                 .then((results) => {
                     this.words = results.data['results'].data;
-                    console.log(this.words);
                     this.selectWord();
                     this.difference = this.currentWord;
                 }).catch((err) => {
@@ -48,7 +62,6 @@ namespace codingskills.Controllers {
                 console.log(this.statsObject);
             }
             if (this.words[this.i].match(unwantedChars)) {
-                console.log("This one has unwanted chars", this.words[this.i]);
                 this.selectWord(); //My first use of recursion!!!!
             } else {
                 this.currentWord = this.words[this.i];
@@ -57,6 +70,8 @@ namespace codingskills.Controllers {
         public keyDown(e) {
             let word = this.currentWord,
                 typed = this.typed;
+            //start the game
+            this.runGame();
             //update the user feedback model
             this.changeDifference();
             //Check for mistakes
