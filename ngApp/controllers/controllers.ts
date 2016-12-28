@@ -13,7 +13,6 @@ namespace codingskills.Controllers {
             private $http: ng.IHttpService,
             private $state: ng.ui.IStateService
             ) {
-                console.log('The state service is ', $state);
                 this.getWords();
         }
         public words = [];
@@ -26,16 +25,17 @@ namespace codingskills.Controllers {
             mistakes: 0,
             wordsTyped: 0,
             keysTyped: 0,
-            errorRate: 0
+            errorRate: 0,
+            gameLength: 15000
         }
         public runGame() {
             if(this.statsObject.wordsTyped == 0 && this.typed == 1 && !this.gameRunning) {
                 this.gameRunning = true;
                 console.log('game started? ', this.gameRunning);
                 let game = window.setTimeout(() => {
-                    console.log("I wanted to use the state obj", this.$state);
-                    this.$state.go('lockerroom', this.statsObject);
-                        }, 15000);
+
+                    this.$state.go('lockerroom', {stats: this.statsObject});
+                        }, this.statsObject.gameLength);
             }
         }
         public getWords() {
@@ -98,7 +98,16 @@ namespace codingskills.Controllers {
         }
     }
     export class LockerroomController {
-
+        public wordsPerMin;
+        public keysPerMin;
+        public accuracy;
+        public stats;
+        constructor(private $stateParams: ng.ui.IStateParamsService) {
+            this.stats = $stateParams['stats'];
+            this.wordsPerMin = (this.stats['wordsTyped'] * 4);
+            this.keysPerMin = (this.stats['keysTyped'] * 4);
+            this.accuracy = (((this.stats['keysTyped'] - this.stats['mistakes']) * 100 / this.stats['keysTyped']));
+        }
     }
     export class ScoreboardController {
         

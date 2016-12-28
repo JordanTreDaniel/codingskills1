@@ -44,7 +44,10 @@ namespace codingskills {
                 templateUrl: '/ngApp/views/lockerroom.html',
                 controller: codingskills.Controllers.LockerroomController,
                 controllerAs: 'controller',
-                parent: 'gym'
+                parent: 'gym',
+                params: {
+                    stats: null
+                }
             })
             .state('scoreboard', {
                 url: '/scoreboard',
