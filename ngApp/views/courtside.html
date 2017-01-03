@@ -1,1 +1,23 @@
-This is the courtside page.
+<div layout="row"> 
+    <div>
+        <span>This is the word you should be typing:</span>
+        <br>
+        <span>This is what you have typed:</span>
+        <br>
+        <span ng-show="controller.typed">What you typed + rest of the target word =</span>
+        <br>
+    </div>
+    <div>
+        <span>{{controller.currentWord}}</span>
+        <br>
+        <span>{{controller.typed}}</span>
+        <br>
+        <span ng-show="controller.typed">{{controller.typed}}{{controller.difference}}</span>
+        <br
+    <div>
+        <input 
+            ng-keyup="controller.keyDown($event)" 
+            ng-model="controller.typed" 
+            type="text">
+    </div>
+</div>
