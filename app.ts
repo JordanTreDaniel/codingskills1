@@ -5,16 +5,26 @@ import * as logger from 'morgan';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as ejs from 'ejs';
-
+import * as mongoose from 'mongoose';
 import routes from './routes/index';
 import users from './routes/users';
-
+import * as dotenv from 'dotenv';
+import wordsAPI from './api/words';
 let app = express();
 
+dotenv.load();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
+console.log("uri is", process.env.MONGO_URI);
+//connect mongoose
+mongoose.connect(process.env.MONGO_URI)
+  .then(()=> {
+    console.log("Database connected");
+  })
+  .catch((err) => {
+    console.log("Error connecting to db", err);
+  })
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -28,6 +38,7 @@ app.use('/api', express.static(path.join(__dirname, 'api')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/api/words', wordsAPI);
 
 
 // redirect 404 to home for the sake of AngularJS client-side routes

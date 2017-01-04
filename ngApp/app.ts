@@ -97,6 +97,8 @@ namespace codingskills {
             .state('notFound', {
                 url: '/notFound',
                 templateUrl: '/ngApp/views/notFound.html',
+                controller: codingskills.Controllers.NotFoundController,
+                controllerAs: "controller",
                 parent: 'nav'
             });
 

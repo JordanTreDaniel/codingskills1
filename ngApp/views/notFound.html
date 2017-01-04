@@ -1,1 +1,27 @@
 <h1>Page Not Found!</h1>
+<div layout="column">  
+    <div layout="column">
+        <form ng-submit="controller.getWords()">
+            <md-input-container>   
+                <label>Search Query</label>
+                <input type='text' ng-model="controller.query">
+            </md-input-container>
+            <md-input-container>   
+                <label>Page Number</label>
+                <input type='number' step="7" ng-model="controller.page">
+            </md-input-container>
+            <md-input-container>   
+                <md-button type="submit" class="md-raised md-accent">Get Words</md-button>
+            </md-input-container>
+        </form>
+    </div>
+    <div layout="column">
+        <form ng-submit="controller.saveWords()">
+            <md-chips layout-wrap ng-model="controller.currentWords"></md-chips>
+            <md-input-container>   
+                <md-button type="submit" class="md-raised md-accent">Save Words</md-button>
+            </md-input-container>
+        </form>
+    </div>
+    
+</div>

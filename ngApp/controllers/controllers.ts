@@ -39,7 +39,7 @@ namespace codingskills.Controllers {
             }
         }
         public getWords() {
-            let pattern = '[s]';
+            let pattern = "[s]";
             this.$http.get('https://wordsapiv1.p.mashape.com/words/?mashape-key=L1Q3tAzB6rmshe27MNaoQquiTyTVp1aw7icjsnz3QOFVipm7Bv&letterPattern='
                         + pattern)
                 .then((results) => {
@@ -55,7 +55,7 @@ namespace codingskills.Controllers {
         }
         public selectWord() {
             this.i++;
-            let unwantedChars = new RegExp("['/ .-0-9]", 'g');
+            let unwantedChars = new RegExp("['/ .-]|[0-9]", 'g');
             // let unwantedChars = new RegExp("['/]", 'g');
 
             if (this.i >= this.words.length) {
@@ -123,6 +123,48 @@ namespace codingskills.Controllers {
     }
     export class AboutController {
         public message = 'Hello from the about page!';
+    }
+    export class NotFoundController {
+        constructor(
+            private $http: ng.IHttpService,
+            private wordService: codingskills.Services.WordService
+        ) {
+            wordService.ping().then((results) => {
+                console.log("The beat go", results.message);
+            }).catch((err) => {
+                console.log("Err pinging api", err);
+            });
+        }
+        public query;
+        public page = 1;
+        public currentWords;
+        public filterWords() {
+            let unwantedChars = new RegExp("['/ .-]|[0-9]", 'g');
+            // let unwantedChars = new RegExp("['/]", 'g');
+            this.currentWords = this.currentWords.filter((word) => {
+                console.log(word, word.match(unwantedChars));
+                return !word.match(unwantedChars);
+            });
+        }
+        public getWords() {
+            let pattern = `[${this.query}]`;
+            this.$http.get('https://wordsapiv1.p.mashape.com/words/?mashape-key=L1Q3tAzB6rmshe27MNaoQquiTyTVp1aw7icjsnz3QOFVipm7Bv&letterPattern='
+                        + pattern + '&page=' + this.page)
+                .then((results) => {
+                    this.currentWords = results.data['results'].data;
+                    this.filterWords();
+                }).catch((err) => {
+                    console.log("Error getting the words", err);
+                });
+        }
+        public saveWords() {
+            this.wordService.save({words: this.currentWords})
+                .then((results) => {
+                    console.log(results.message);
+                }).catch((err) => {
+                    console.log("Something went wrong", err);
+                })
+        }
     }
 
 }
