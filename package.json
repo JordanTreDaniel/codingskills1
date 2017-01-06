@@ -8,6 +8,7 @@
   "dependencies": {
     "@types/angular": "^1.5.13",
     "@types/angular-animate": "^1.5.4",
+    "@types/angular-cookies": "^1.4.3",
     "@types/angular-material": "0.0.0",
     "@types/angular-resource": "^1.5.4",
     "@types/angular-ui-bootstrap": "^0.13.33",
@@ -21,6 +22,7 @@
     "@types/mocha": "^2.2.34",
     "@types/morgan": "^1.7.31",
     "@types/serve-favicon": "^2.2.27",
+    "angular-cookies": "^1.6.1",
     "body-parser": "~1.15.1",
     "chai": "^3.5.0",
     "cookie-parser": "~1.4.3",
