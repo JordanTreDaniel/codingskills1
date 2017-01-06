@@ -4,7 +4,11 @@ import * as passport from 'passport';
 import * as jwt from 'jsonwebtoken';
 import * as session from 'express-session';
 import methods from './methods';
+<<<<<<< HEAD
 import User from '../models/Users';
+=======
+import User from './../models/Users';
+>>>>>>> 711f8dbc8bdad92bb565c53996d27e81aa94900e
 let router = express.Router();
 
 router.get('/users/:id', function(req, res, next) {

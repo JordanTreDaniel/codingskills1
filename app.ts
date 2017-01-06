@@ -7,11 +7,18 @@ import * as ejs from 'ejs';
 import * as mongoose from 'mongoose';
 import * as passport from 'passport';
 import * as session from 'express-session';
+import User from './models/Users';
 const MongoStore = require('connect-mongo')(session);
+<<<<<<< HEAD
 import User from './models/Users';
 
 
 import routes from './routes/index';
+=======
+import routes from './routes/index';
+
+
+>>>>>>> 711f8dbc8bdad92bb565c53996d27e81aa94900e
 
 let app = express();
 
@@ -75,11 +82,14 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
+app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.json());
-app.use(passport.initialize());
 app.use(bodyParser.urlencoded({ extended: false }));
+<<<<<<< HEAD
 // app.use(cookieParser());
+=======
+>>>>>>> 711f8dbc8bdad92bb565c53996d27e81aa94900e
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components', express.static(path.join(__dirname, 'bower_components')));
 app.use('/ngApp', express.static(path.join(__dirname, 'ngApp')));
