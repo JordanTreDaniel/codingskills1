@@ -16,7 +16,7 @@ router.post('/', (req, res, next) => {
                 console.log("Error saving word", w, err);
             });
     }
-    res.json({message: "All done!"});
+    res.json({message: "I saved " + words.length + " words!"});
 });
 
 export default router;

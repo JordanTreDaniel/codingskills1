@@ -29,7 +29,7 @@ namespace codingskills.Controllers {
             gameLength: 15000
         }
         public runGame() {
-            if(this.statsObject.wordsTyped == 0 && this.typed == 1 && !this.gameRunning) {
+            if(this.statsObject.wordsTyped == 0 && !this.gameRunning) {
                 this.gameRunning = true;
                 console.log('game started? ', this.gameRunning);
                 let game = window.setTimeout(() => {
@@ -138,6 +138,7 @@ namespace codingskills.Controllers {
         public query;
         public page = 1;
         public currentWords;
+        public wordLength = 5;
         public filterWords() {
             let unwantedChars = new RegExp("['/ .-]|[0-9]", 'g');
             // let unwantedChars = new RegExp("['/]", 'g');
@@ -149,7 +150,7 @@ namespace codingskills.Controllers {
         public getWords() {
             let pattern = `[${this.query}]`;
             this.$http.get('https://wordsapiv1.p.mashape.com/words/?mashape-key=L1Q3tAzB6rmshe27MNaoQquiTyTVp1aw7icjsnz3QOFVipm7Bv&letterPattern='
-                        + pattern + '&page=' + this.page)
+                        + pattern + '&page=' + this.page + '&lettersMax=' + this.wordLength)
                 .then((results) => {
                     this.currentWords = results.data['results'].data;
                     this.filterWords();
