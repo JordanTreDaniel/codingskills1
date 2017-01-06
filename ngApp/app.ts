@@ -27,7 +27,7 @@ namespace codingskills {
                     ]
                 }
             })
-            .state('home', {
+            .state('nav.home', {
                 url: '/',
                 templateUrl: '/ngApp/views/home.html',
                 controller: codingskills.Controllers.HomeController,
@@ -46,7 +46,7 @@ namespace codingskills {
                 controllerAs: 'controller',
                 parent: 'nav',
             })
-            .state('courtside', {
+            .state('gym.courtside', {
                 url: '/courtside',
                 templateUrl: '/ngApp/views/courtside.html',
                 controller: codingskills.Controllers.CourtsideController,
