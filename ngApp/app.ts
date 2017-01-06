@@ -17,15 +17,14 @@ namespace codingskills {
                 controllerAs: 'vm',
                 resolve: {
                     currentUser: [
-                        'UserService', '$state', (UserService, $state) => {
-                            return UserService.getCurrentUser((user) => {
-                                return user;
-                            }).catch((e) => {
-                                return { username: false };
-                            })
-                        }
-                    ]
-                }
+                      'UserService', '$state', (UserService, $state) => {
+                        return UserService.getCurrentUser((user) => {
+                          return user;
+                        }).catch((e) => {
+                          return { username: false };
+                        });
+                      }]
+                  }
             })
             .state('home', {
                 url: '/',
@@ -40,7 +39,7 @@ namespace codingskills {
 
 
             .state('gym', {
-                url: '/gym', 
+                url: '/gym',
                 templateUrl: '/ngApp/views/gym.html',
                 controller: codingskills.Controllers.GymController,
                 controllerAs: 'controller',
@@ -120,7 +119,7 @@ namespace codingskills {
         requireBase: false,
         rewriteLinks: false
       });
-      
+
     $httpProvider.interceptors.push('authInterceptor');
     }).factory('authInterceptor',
       ['$q','$location',
@@ -149,8 +148,8 @@ namespace codingskills {
         }
       }
     }])
-    
 
-    
+
+
 
 }
