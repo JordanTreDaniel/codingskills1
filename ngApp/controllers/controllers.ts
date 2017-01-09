@@ -6,20 +6,22 @@ namespace codingskills.Controllers {
         public message = 'Hello from the home page!';
     }
     export class GymController {
-
+         
     }
     export class CourtsideController {
         constructor(
             private $http: ng.IHttpService,
-            private $state: ng.ui.IStateService
+            private $state: ng.ui.IStateService,
+            private wordService: codingskills.Services.WordService,
+            private LEVELS
             ) {
-                this.getWords();
+                this.genWord();
         }
-        public words = [];
+        public currentLevel = 5;
+        public currentLetters;
         public currentWord;
         public typed;
         public difference;
-        public i = 0;
         public gameRunning = false;
         public statsObject = {
             mistakes: 0,
@@ -38,34 +40,18 @@ namespace codingskills.Controllers {
                         }, this.statsObject.gameLength);
             }
         }
-        public getWords() {
-            let pattern = "[s]";
-            this.$http.get('https://wordsapiv1.p.mashape.com/words/?mashape-key=L1Q3tAzB6rmshe27MNaoQquiTyTVp1aw7icjsnz3QOFVipm7Bv&letterPattern='
-                        + pattern)
-                .then((results) => {
-                    this.words = results.data['results'].data;
-                    this.selectWord();
-                    this.difference = this.currentWord;
-                }).catch((err) => {
-                    console.log("Error getting the words", err);
-                });
-        }
         public changeDifference() {
             this.difference = this.currentWord.substring(this.typed.length);
         }
-        public selectWord() {
-            this.i++;
-            let unwantedChars = new RegExp("['/ .-]|[0-9]", 'g');
-            // let unwantedChars = new RegExp("['/]", 'g');
-
-            if (this.i >= this.words.length) {
-                console.log(this.statsObject);
+        public genWord() {
+            let wordLength = Math.floor(Math.random() * 7) + 1;
+            let word = '';
+            this.currentLetters = this.LEVELS[this.currentLevel];
+            for (var i = 0; i < wordLength; i++) {
+                word += this.currentLetters[Math.floor(Math.random() * this.currentLetters.length)];
             }
-            if (this.words[this.i].match(unwantedChars)) {
-                this.selectWord(); //My first use of recursion!!!!
-            } else {
-                this.currentWord = this.words[this.i];
-            }
+            console.log("Adding", word);
+            this.currentWord = word;
         }
         public keyDown(e) {
             let word = this.currentWord,
@@ -91,7 +77,7 @@ namespace codingskills.Controllers {
                 //count the wordsTyped
                 this.statsObject.wordsTyped++;
                 //load a new word
-                this.selectWord();
+                this.genWord();
                 //empty the typing input
                 this.typed = '';
             }
@@ -106,7 +92,7 @@ namespace codingskills.Controllers {
             this.stats = $stateParams['stats'];
             this.wordsPerMin = (this.stats['wordsTyped'] * 4);
             this.keysPerMin = (this.stats['keysTyped'] * 4);
-            this.accuracy = (((this.stats['keysTyped'] - this.stats['mistakes']) * 100 / this.stats['keysTyped']));
+            this.accuracy = Math.floor((((this.stats['keysTyped'] - this.stats['mistakes']) * 100 / this.stats['keysTyped'])));
         }
     }
     export class ScoreboardController {
@@ -128,13 +114,7 @@ namespace codingskills.Controllers {
         constructor(
             private $http: ng.IHttpService,
             private wordService: codingskills.Services.WordService
-        ) {
-            wordService.ping().then((results) => {
-                console.log("The beat go", results.message);
-            }).catch((err) => {
-                console.log("Err pinging api", err);
-            });
-        }
+        ) {}
         public query;
         public page = 1;
         public currentWords;

@@ -4,8 +4,8 @@ namespace codingskills.Services {
             this.WordResource = $resource('/api/words');
         }
         public WordResource;
-        public ping() {
-            return this.WordResource.get().$promise;
+        public get(patternObj) {
+            return this.WordResource.get(patternObj).$promise;
         }
         public save(words) {
             return this.WordResource.save(words).$promise;

@@ -4,7 +4,12 @@ import Word from '../models/Word';
 let router = express.Router();
 
 router.get('/', (req, res, next) => {
-    res.json({message: "Boom! Bah-buhm-buhm! Boom!"});
+    let pattern = new RegExp(req.body.pattern);
+    Word.find({string: {$regex: pattern, $options: 'i'}}).then((results) => {
+        res.json({message: results});
+    }).catch((err) => {
+        console.log("Err getting the words", err);
+    })
 });
 
 router.post('/', (req, res, next) => {
