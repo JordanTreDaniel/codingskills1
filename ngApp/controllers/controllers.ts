@@ -13,12 +13,12 @@ namespace codingskills.Controllers {
             private $http: ng.IHttpService,
             private $state: ng.ui.IStateService,
             private wordService: codingskills.Services.WordService,
-            private LEVELS
+            private LEVELS,
             ) {
                 this.genWord();
         }
-        public currentLevel = 5;
-        public currentLetters;
+        public currentLevels = [1, 2];
+        public currentLetters = [];
         public currentWord;
         public typed;
         public difference;
@@ -43,15 +43,28 @@ namespace codingskills.Controllers {
         public changeDifference() {
             this.difference = this.currentWord.substring(this.typed.length);
         }
+        public setLetters() {
+            for (var i in this.currentLevels) {
+                this.currentLetters = this.currentLetters.concat(this.LEVELS[this.currentLevels[i]]);
+            }
+        }
         public genWord() {
             let wordLength = Math.floor(Math.random() * 7) + 1;
             let word = '';
-            this.currentLetters = this.LEVELS[this.currentLevel];
+            this.setLetters();
             for (var i = 0; i < wordLength; i++) {
                 word += this.currentLetters[Math.floor(Math.random() * this.currentLetters.length)];
             }
-            console.log("Adding", word);
             this.currentWord = word;
+        }
+        public toggleLevelInclusion(number) {
+            if (this.currentLevels.includes(number)) {
+                this.currentLevels.splice(this.currentLevels.indexOf(number), 1);
+            } else {
+                this.currentLevels.push(number);
+            }
+            this.setLetters();
+            console.log("Included levels are", this.currentLevels);
         }
         public keyDown(e) {
             let word = this.currentWord,

@@ -3,7 +3,7 @@ namespace codingskills {
     angular.module('codingskills', ['ui.router', 'ngResource', 'ngMaterial'])
     
     .constant('LEVELS', {
-        1: ['a', 's', 'd', 'f', 'g', ' '],
+        1: ['a', 's', 'd', 'f', 'g'],
         2: ['h', 'j', 'k', 'l', ';'],
         3: ['q', 'w', 'e', 'r', 't'],
         4: ['y', 'u', 'i', 'o', 'p'],
