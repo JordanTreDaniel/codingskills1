@@ -26,7 +26,7 @@ namespace codingskills {
                       }]
                   }
             })
-            .state('nav.home', {
+            .state('home', {
                 url: '/',
                 templateUrl: '/ngApp/views/home.html',
                 controller: codingskills.Controllers.HomeController,

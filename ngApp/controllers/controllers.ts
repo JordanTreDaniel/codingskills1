@@ -14,7 +14,7 @@ namespace codingskills.Controllers {
 
         logout() {
             this.UserService.logout().then(() => {
-                this.$state.go('main.home', null, { reload: true, notify: true });
+                this.$state.go('account', null, { reload: true, notify: true });
             }).catch(() => {
                 throw new Error('Unsuccessful logout');
             });
@@ -144,7 +144,7 @@ namespace codingskills.Controllers {
             //u must b auth br0 *redirected w/ angular*
             //should be done from stateProvider
             if (!currentUser['username']) {
-                $state.go('main.login', null, { reload: true, notify: true });
+                $state.go('loginregister', null, { reload: true, notify: true });
             }
 
             if (currentUser['facebookId']) {
@@ -165,7 +165,7 @@ namespace codingskills.Controllers {
 
         public login(user) {
             this.UserService.login(user).then((res) => {
-                this.$state.go('main.profile', null, { reload: true, notify: true });
+                this.$state.go('account', null, { reload: true, notify: true });
             }).catch((err) => {
                 alert('Bunk login, please try again.');
             });
@@ -173,7 +173,7 @@ namespace codingskills.Controllers {
 
         public register(user) {
             this.UserService.register(user).then((res) => {
-                this.$state.go('main.login');
+                this.$state.go('loginregister');
             }).catch((err) => {
                 alert('Registration error: please try again.');
             });
