@@ -43,6 +43,7 @@ passport.use(new FacebookStrategy({
 ));
 
 passport.use(new LocalStrategy(function(username: String, password: string, done) {
+  console.log(username);
   User.findOne({ username: username }, function(err, user) {
     if(err) return done(err);
     if(!user) return done(null, false, { message: 'Incorrect username.' });

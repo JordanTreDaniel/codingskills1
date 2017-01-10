@@ -9,12 +9,11 @@ let router = express.Router();
 //Express has Express.Request but the interface isn't very good...  requires overrides
 function setSession(req, res, next, user) {
   let token = user.generateJWT();
-
   return req.logIn(user, (err) => {
     if (err) res.status(500).json({message: 'login failed'});
     return req.session.save(function (err){
       if (err) res.sendStatus(500).json({message: 'session failed'});
-      return res.redirect('/profile');
+      return res.json({message: 'Session successful.'})
     });
   });
 }

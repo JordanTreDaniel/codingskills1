@@ -22,19 +22,19 @@
 </form>
 <div flex='50'>
     Registration
-    <form ng-submit="controller.register(controller.user)">
+    <form ng-submit="controller.register(controller.newUser)">
         <md-input-container>
             <label>User Name</label>
-            <input type="text" ng-model="controller.user.username">
+            <input type="text" ng-model="controller.newUser.username">
         </md-input-container>
         <md-input-container>
             <label>Email</label>
-            <input type="email" ng-model="controller.user.email">
+            <input type="email" ng-model="controller.newUser.email">
         </md-input-container>
         <br/>
         <md-input-container>
             <label>Password</label>
-            <input type="password" ng-model="controller.user.password">
+            <input type="password" ng-model="controller.newUser.password">
         </md-input-container>
         </br>
         <md-button type="submit">Submit</md-button>

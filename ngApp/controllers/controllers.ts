@@ -160,6 +160,7 @@ namespace codingskills.Controllers {
     }
     export class LoginRegisterController {
         public user;
+        public newUser;
         public currentUser;
         public isLoggedIn;
 
@@ -173,7 +174,8 @@ namespace codingskills.Controllers {
 
         public register(user) {
             this.UserService.register(user).then((res) => {
-                this.$state.go('loginregister');
+                alert('please login');
+                this.$state.go('loginregister', null, { reload: true, notify: true });
             }).catch((err) => {
                 alert('Registration error: please try again.');
             });
