@@ -45,7 +45,7 @@ namespace codingskills {
                 controllerAs: 'controller',
                 parent: 'nav',
             })
-            .state('gym.courtside', {
+            .state('courtside', {
                 url: '/courtside',
                 templateUrl: '/ngApp/views/courtside.html',
                 controller: codingskills.Controllers.CourtsideController,
