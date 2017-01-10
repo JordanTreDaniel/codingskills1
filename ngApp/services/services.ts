@@ -35,7 +35,5 @@ namespace codingSkills.Services {
       }
     }
 
-    angular.module('codingSkills').service('UserService', UserService);
+  angular.module('codingskills').service('UserService', UserService);
 }
-
-    

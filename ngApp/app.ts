@@ -2,16 +2,29 @@ namespace codingskills {
 
     angular.module('codingskills', ['ui.router', 'ngResource', 'ngMaterial']).config((
         $stateProvider: ng.ui.IStateProvider,
+        $resourceProvider: ng.ui.IStateProvider,
+        $httpProvider: ng.IHttpProvider,
         $urlRouterProvider: ng.ui.IUrlRouterProvider,
         $locationProvider: ng.ILocationProvider
     ) => {
         // Define routes
         $stateProvider
             .state('nav', {
+                url: '',
                 templateUrl: '/ngApp/views/nav.html',
                 controller: codingskills.Controllers.NavController,
                 abstract: true,
-                controllerAs: 'vm'
+                controllerAs: 'vm',
+                resolve: {
+                    currentUser: [
+                      'UserService', '$state', (UserService, $state) => {
+                        return UserService.getCurrentUser((user) => {
+                          return user;
+                        }).catch((e) => {
+                          return { username: false };
+                        });
+                      }]
+                  }
             })
             .state('home', {
                 url: '/',
@@ -26,7 +39,7 @@ namespace codingskills {
 
 
             .state('gym', {
-                url: '/gym', 
+                url: '/gym',
                 templateUrl: '/ngApp/views/gym.html',
                 controller: codingskills.Controllers.GymController,
                 controllerAs: 'controller',
@@ -101,9 +114,42 @@ namespace codingskills {
         $urlRouterProvider.otherwise('/notFound');
 
         // Enable HTML5 navigation
-        $locationProvider.html5Mode(true);
-    });
+           $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false,
+        rewriteLinks: false
+      });
 
-    
+    $httpProvider.interceptors.push('authInterceptor');
+    }).factory('authInterceptor',
+      ['$q','$location',
+      function ($q, $location) {
+      return {
+        // Add authorization token to headers PER req
+        request: function (config) {
+          config.headers = config.headers || {};
+          return config;
+        },
+
+        // Intercept 401s/500s and redirect you to login
+        responseError: function(response) {
+          if(response.status === 401) {
+            // good place to explain to the user why or redirect
+            console.info(`this account needs to authenticate to ${response.config.method} ${response.config.url}`);
+          }
+          if(response.status === 403) {
+            alert('unauthorized permission for your account.');
+            // good place to explain to the user why or redirect
+            // remove any stale tokens
+            return $q.reject(response);
+          } else {
+            return $q.reject(response);
+          }
+        }
+      }
+    }])
+
+
+
 
 }

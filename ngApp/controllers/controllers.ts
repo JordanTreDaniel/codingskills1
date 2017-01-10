@@ -2,35 +2,34 @@ namespace codingskills.Controllers {
     export class NavController {
         public role = "Provide Navigation to application"
         public currentUser;
-  public self = this;
+        public self = this;
 
-  constructor(
-    private UserService: codingSkills.Services.UserService,
-    private $state: ng.ui.IStateService,
-    currentUser: ng.ui.IResolvedState
-  ) {
-    this.currentUser = currentUser;
-  }
+        constructor(
+            private UserService: codingSkills.Services.UserService,
+            private $state: ng.ui.IStateService,
+            currentUser: ng.ui.IResolvedState
+        ) {
+            this.currentUser = currentUser;
+        }
 
-  logout() {
-    this.UserService.logout().then(() => {
-      this.$state.go('main.home', null, {reload: true, notify:true});
-    }).catch(() => {
-      throw new Error('Unsuccessful logout');
-    });
-  }
+        logout() {
+            this.UserService.logout().then(() => {
+                this.$state.go('account', null, { reload: true, notify: true });
+            }).catch(() => {
+                throw new Error('Unsuccessful logout');
+            });
+        }
     }
     export class HomeController {
         public message = 'Hello from the home page!';
-         public currentUser;
-  constructor(
-    private $state: ng.ui.IStateService,
-    currentUser: ng.ui.IResolvedState,
-    private $cookies: ng.cookies.ICookiesService
-  ) {
+        public currentUser;
+        constructor(
+            private $state: ng.ui.IStateService,
+            currentUser: ng.ui.IResolvedState
+        ) {
 
-    this.currentUser = currentUser;
-  }
+            this.currentUser = currentUser;
+        }
     }
     export class GymController {
 
@@ -39,9 +38,9 @@ namespace codingskills.Controllers {
         constructor(
             private $http: ng.IHttpService,
             private $state: ng.ui.IStateService
-            ) {
-                console.log('The state service is ', $state);
-                this.getWords();
+        ) {
+            console.log('The state service is ', $state);
+            this.getWords();
         }
         public words = [];
         public currentWord;
@@ -56,19 +55,19 @@ namespace codingskills.Controllers {
             errorRate: 0
         }
         public runGame() {
-            if(this.statsObject.wordsTyped == 0 && this.typed == 1 && !this.gameRunning) {
+            if (this.statsObject.wordsTyped == 0 && this.typed == 1 && !this.gameRunning) {
                 this.gameRunning = true;
                 console.log('game started? ', this.gameRunning);
                 let game = window.setTimeout(() => {
                     console.log("I wanted to use the state obj", this.$state);
                     this.$state.go('lockerroom', this.statsObject);
-                        }, 15000);
+                }, 15000);
             }
         }
         public getWords() {
             let pattern = '[s]';
             this.$http.get('https://wordsapiv1.p.mashape.com/words/?mashape-key=L1Q3tAzB6rmshe27MNaoQquiTyTVp1aw7icjsnz3QOFVipm7Bv&letterPattern='
-                        + pattern)
+                + pattern)
                 .then((results) => {
                     this.words = results.data['results'].data;
                     this.selectWord();
@@ -110,7 +109,7 @@ namespace codingskills.Controllers {
                 //basically if they made a mistake
                 if (word[typed.length - 1] != typed[typed.length - 1]) {
                     this.statsObject.mistakes++;
-                    console.log("mistakes: ", this.statsObject.mistakes); 
+                    console.log("mistakes: ", this.statsObject.mistakes);
                 }
             }
             //Check for correct completion
@@ -128,67 +127,65 @@ namespace codingskills.Controllers {
 
     }
     export class ScoreboardController {
-        
+
     }
     export class AccountController {
 
     }
     export class MyAccountController {
-        public avatar:string;
+        public avatar: string;
         public currentUser;
-  
-  constructor(
-    currentUser: ng.ui.IResolvedState,
-    $state: ng.ui.IStateService
-  ) 
-  
-  {
-    this.currentUser = currentUser;
-    //u must b auth br0 *redirected w/ angular*
-    //should be done from stateProvider
-    if(!currentUser['username']) {
-      $state.go('main.login', null, { reload: true, notify: true });
-    }
 
-    if(currentUser['facebookId']){
-      this.avatar = `//graph.facebook.com/v2.8/${currentUser['facebookId']}/picture`;
-    } else {
-      this.avatar = '//placehold.it/350x350';
-    }
-  }
+        constructor(
+            currentUser: ng.ui.IResolvedState,
+            $state: ng.ui.IStateService
+        ) {
+            this.currentUser = currentUser;
+            //u must b auth br0 *redirected w/ angular*
+            //should be done from stateProvider
+            if (!currentUser['username']) {
+                $state.go('loginregister', null, { reload: true, notify: true });
+            }
+
+            if (currentUser['facebookId']) {
+                this.avatar = `//graph.facebook.com/v2.8/${currentUser['facebookId']}/picture`;
+            } else {
+                this.avatar = '//placehold.it/350x350';
+            }
+        }
 
 
-        
+
 
     }
     export class LoginRegisterController {
-          public user;
-  public currentUser;
-  public isLoggedIn;
+        public user;
+        public currentUser;
+        public isLoggedIn;
 
-  public login(user) {
-    this.UserService.login(user).then((res) => {
-      this.$state.go('main.profile', null, {reload: true, notify:true});
-    }).catch((err) => {
-      alert('Bunk login, please try again.');
-    });
-  }
+        public login(user) {
+            this.UserService.login(user).then((res) => {
+                this.$state.go('account', null, { reload: true, notify: true });
+            }).catch((err) => {
+                alert('Bunk login, please try again.');
+            });
+        }
 
-  public register(user) {
-    this.UserService.register(user).then((res) => {
-      this.$state.go('main.login');
-    }).catch((err) => {
-      alert('Registration error: please try again.');
-    });
-  }
+        public register(user) {
+            this.UserService.register(user).then((res) => {
+                this.$state.go('loginregister');
+            }).catch((err) => {
+                alert('Registration error: please try again.');
+            });
+        }
 
-  constructor(
-    private UserService:codingSkills.Services.UserService,
-    private $state: ng.ui.IStateService
-  ) {
-  }
+        constructor(
+            private UserService: codingSkills.Services.UserService,
+            private $state: ng.ui.IStateService
+        ) {
+        }
 
-        
+
     }
     export class AboutController {
         public message = 'Hello from the about page!';
