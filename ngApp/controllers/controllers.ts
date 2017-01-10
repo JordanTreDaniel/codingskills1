@@ -30,6 +30,7 @@ namespace codingskills.Controllers {
             errorRate: 0,
             gameLength: 15000
         }
+        //Initiliaze time-loop and stats counting
         public runGame() {
             if(this.statsObject.wordsTyped == 0 && !this.gameRunning) {
                 this.gameRunning = true;
@@ -40,6 +41,7 @@ namespace codingskills.Controllers {
                         }, this.statsObject.gameLength);
             }
         }
+        //The substring from this.currentWord of what the user has yet to type
         public changeDifference() {
             this.difference = this.currentWord.substring(this.typed.length);
         }
@@ -48,6 +50,7 @@ namespace codingskills.Controllers {
                 this.currentLetters = this.currentLetters.concat(this.LEVELS[this.currentLevels[i]]);
             }
         }
+        //Sets correct letter set, generates a random word, and sets it to current word
         public genWord() {
             let wordLength = Math.floor(Math.random() * 7) + 1;
             let word = '';
@@ -57,14 +60,20 @@ namespace codingskills.Controllers {
             }
             this.currentWord = word;
         }
+        //ng-click on the checkboxes to include or exclude
         public toggleLevelInclusion(number) {
-            if (this.currentLevels.includes(number)) {
-                this.currentLevels.splice(this.currentLevels.indexOf(number), 1);
+            var idx = this.currentLevels.indexOf(number);
+            if (idx > -1) {
+                this.currentLevels.splice(idx, 1);
             } else {
                 this.currentLevels.push(number);
             }
             this.setLetters();
             console.log("Included levels are", this.currentLevels);
+        }
+        //Initialize the included checkboxes checked.
+        public isIncluded(number) {
+            return this.currentLevels.indexOf(number) > -1;
         }
         public keyDown(e) {
             let word = this.currentWord,
