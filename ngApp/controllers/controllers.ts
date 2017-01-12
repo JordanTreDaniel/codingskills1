@@ -5,15 +5,18 @@ namespace codingskills.Controllers {
         public self = this;
 
         constructor(
-            private UserService: codingSkills.Services.UserService,
+            private UserService: codingskills.Services.UserService,
             private $state: ng.ui.IStateService,
-            currentUser: ng.ui.IResolvedState
+            currentUser: ng.ui.IResolvedState,
+            private Session: codingskills.Services.Session
+
         ) {
             this.currentUser = currentUser;
         }
 
         logout() {
             this.UserService.logout().then(() => {
+                this.Session.destroy();
                 this.$state.go('account', null, { reload: true, notify: true });
             }).catch(() => {
                 throw new Error('Unsuccessful logout');
@@ -24,11 +27,12 @@ namespace codingskills.Controllers {
         public message = 'Hello from the home page!';
         public currentUser;
         constructor(
+            Session: codingskills.Services.Session,
             private $state: ng.ui.IStateService,
-            currentUser: ng.ui.IResolvedState
         ) {
 
-            this.currentUser = currentUser;
+             this.currentUser = Session.getUser();
+
         }
     }
     export class GymController {
@@ -166,6 +170,7 @@ namespace codingskills.Controllers {
 
         public login(user) {
             this.UserService.login(user).then((res) => {
+                this.Session.create(res);
                 this.$state.go('account', null, { reload: true, notify: true });
             }).catch((err) => {
                 alert('Bunk login, please try again.');
@@ -182,8 +187,9 @@ namespace codingskills.Controllers {
         }
 
         constructor(
-            private UserService: codingSkills.Services.UserService,
-            private $state: ng.ui.IStateService
+            private UserService: codingskills.Services.UserService,
+            private $state: ng.ui.IStateService,
+            private Session: codingskills.Services.Session
         ) {
         }
 

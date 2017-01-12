@@ -7,7 +7,7 @@ import * as ejs from 'ejs';
 import * as mongoose from 'mongoose';
 import * as passport from 'passport';
 import * as session from 'express-session';
-import User from './models/Users';
+import {User} from './models/Users';
 const MongoStore = require('connect-mongo')(session);
 
 import routes from './routes/index';

@@ -1,6 +1,6 @@
 namespace codingskills {
 
-    angular.module('codingskills', ['ui.router', 'ngResource', 'ngMaterial']).config((
+    angular.module('codingskills', ['ui.router', 'ngResource', 'ngMaterial', 'ngStorage']).config((
         $stateProvider: ng.ui.IStateProvider,
         $resourceProvider: ng.ui.IStateProvider,
         $httpProvider: ng.IHttpProvider,
@@ -16,16 +16,17 @@ namespace codingskills {
               abstract: true,
               controllerAs: 'vm',
               resolve: {
-                  currentUser: [
-                    'UserService', '$state', (UserService, $state) => {
-                      return UserService.getCurrentUser((user) => {
-                        return user;
-                      }).catch((e) => {
-                        return { username: false };
-                      });
-                    }]
-                }
-          })
+                  currentUser: ['Session', (Session) => {
+              return Session.getUser();
+            }],
+            isAuthenticated: ['Session', (Session) => {
+              return Session.isAuthenticated();
+            }],
+            currentNavItem: ['$state', ($state) => {
+              return $state.current.name;
+            }]
+          }
+        })
           .state('home', {
               url: '/',
               templateUrl: '/ngApp/views/home.html',
@@ -121,35 +122,64 @@ namespace codingskills {
         });
 
         $httpProvider.interceptors.push('authInterceptor');
-    }).factory('authInterceptor',
-      ['$q','$location',
-      function ($q, $location) {
-      return {
-        // Add authorization token to headers PER req
-        request: function (config) {
-          config.headers = config.headers || {};
-          return config;
-        },
-
-        // Intercept 401s/500s and redirect you to login
-        responseError: function(response) {
-          if(response.status === 401) {
-            // good place to explain to the user why or redirect
-            console.info(`this account needs to authenticate to ${response.config.method} ${response.config.url}`);
-          }
-          if(response.status === 403) {
-            alert('unauthorized permission for your account.');
-            // good place to explain to the user why or redirect
-            // remove any stale tokens
-            return $q.reject(response);
-          } else {
-            return $q.reject(response);
-          }
-        }
+    }).factory('_', ['$window',
+      function($window) {
+        // place lodash include before angular
+        return $window._;
       }
-    }])
-
-
-
-
+    ])
+    .factory('authInterceptor', function ($rootScope, $q, AUTH_EVENTS) {
+      return {
+        responseError: function (response) {
+          $rootScope.$broadcast({
+            401: AUTH_EVENTS.notAuthenticated,
+            403: AUTH_EVENTS.notAuthorized,
+            419: AUTH_EVENTS.sessionTimeout,
+            440: AUTH_EVENTS.sessionTimeout
+          }[response.status], response);
+          return $q.reject(response);
+        }
+      };
+    })
+    .run(
+      [
+        '$rootScope',
+        'UserService',
+        '$sessionStorage',
+        'Session',
+        '$state',
+        '_',
+        'AUTH_EVENTS',
+        (
+          $rootScope,
+          UserService,
+          $sessionStorage,
+          Session,
+          $state: ng.ui.IStateService,
+          _,
+          AUTH_EVENTS
+        ) => {
+          $rootScope.$on('$stateChangeStart', (event, next) => {
+            UserService.getCurrentUser().then((user) => {
+              $sessionStorage.user = user;
+            }).catch((user) => {
+              $sessionStorage.user = user;
+            });
+            let authorizedRoles = !_.isUndefined(next.data, 'authorizedRoles')
+              ? next.data.authorizedRoles : false;
+            if (authorizedRoles && !Session.isAuthorized(authorizedRoles)) {
+              event.preventDefault();
+              if(Session.isAuthenticated()){
+                //TODO dialog
+                // $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+                $state.go('home');
+              } else {
+                // $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+                $state.go('home');
+              }
+            }
+          });
+        }
+      ]
+    );
 }
