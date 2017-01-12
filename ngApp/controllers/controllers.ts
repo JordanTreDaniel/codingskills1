@@ -32,66 +32,74 @@ namespace codingskills.Controllers {
         }
     }
     export class GymController {
-
+         
     }
     export class CourtsideController {
         constructor(
             private $http: ng.IHttpService,
-            private $state: ng.ui.IStateService
-        ) {
-            console.log('The state service is ', $state);
-            this.getWords();
+            private $state: ng.ui.IStateService,
+            private wordService: codingskills.Services.WordService,
+            private LEVELS,
+            ) {
+                this.genWord();
         }
-        public words = [];
+        public currentLevels = [1, 2];
+        public currentLetters = [];
         public currentWord;
         public typed;
         public difference;
-        public i = 0;
         public gameRunning = false;
         public statsObject = {
             mistakes: 0,
             wordsTyped: 0,
             keysTyped: 0,
-            errorRate: 0
+            errorRate: 0,
+            gameLength: 15000
         }
+        //Initiliaze time-loop and stats counting
         public runGame() {
-            if (this.statsObject.wordsTyped == 0 && this.typed == 1 && !this.gameRunning) {
+            if(this.statsObject.wordsTyped == 0 && !this.gameRunning) {
                 this.gameRunning = true;
                 console.log('game started? ', this.gameRunning);
                 let game = window.setTimeout(() => {
-                    console.log("I wanted to use the state obj", this.$state);
-                    this.$state.go('lockerroom', this.statsObject);
-                }, 15000);
+
+                    this.$state.go('lockerroom', {stats: this.statsObject});
+                        }, this.statsObject.gameLength);
             }
         }
-        public getWords() {
-            let pattern = '[s]';
-            this.$http.get('https://wordsapiv1.p.mashape.com/words/?mashape-key=L1Q3tAzB6rmshe27MNaoQquiTyTVp1aw7icjsnz3QOFVipm7Bv&letterPattern='
-                + pattern)
-                .then((results) => {
-                    this.words = results.data['results'].data;
-                    this.selectWord();
-                    this.difference = this.currentWord;
-                }).catch((err) => {
-                    console.log("Error getting the words", err);
-                });
-        }
+        //The substring from this.currentWord of what the user has yet to type
         public changeDifference() {
             this.difference = this.currentWord.substring(this.typed.length);
         }
-        public selectWord() {
-            this.i++;
-            let unwantedChars = new RegExp("['/ .-0-9]", 'g');
-            // let unwantedChars = new RegExp("['/]", 'g');
-
-            if (this.i >= this.words.length) {
-                console.log(this.statsObject);
+        public setLetters() {
+            for (var i in this.currentLevels) {
+                this.currentLetters = this.currentLetters.concat(this.LEVELS[this.currentLevels[i]]);
             }
-            if (this.words[this.i].match(unwantedChars)) {
-                this.selectWord(); //My first use of recursion!!!!
+        }
+        //Sets correct letter set, generates a random word, and sets it to current word
+        public genWord() {
+            let wordLength = Math.floor(Math.random() * 7) + 1;
+            let word = '';
+            this.setLetters();
+            for (var i = 0; i < wordLength; i++) {
+                word += this.currentLetters[Math.floor(Math.random() * this.currentLetters.length)];
+            }
+            this.currentWord = word;
+        }
+        //ng-click on the checkboxes to include or exclude
+        public toggleLevelInclusion(number) {
+            var idx = this.currentLevels.indexOf(number);
+            if (idx > -1) {
+                this.currentLevels.splice(idx, 1);
             } else {
-                this.currentWord = this.words[this.i];
+                this.currentLevels.push(number);
             }
+            this.setLetters();
+            console.log("Included levels are", this.currentLevels);
+        }
+        //Initialize the included checkboxes checked.
+        public isIncluded(number) {
+            return this.currentLevels.indexOf(number) > -1;
         }
         public keyDown(e) {
             let word = this.currentWord,
@@ -109,7 +117,7 @@ namespace codingskills.Controllers {
                 //basically if they made a mistake
                 if (word[typed.length - 1] != typed[typed.length - 1]) {
                     this.statsObject.mistakes++;
-                    console.log("mistakes: ", this.statsObject.mistakes);
+                    console.log("mistakes: ", this.statsObject.mistakes); 
                 }
             }
             //Check for correct completion
@@ -117,17 +125,26 @@ namespace codingskills.Controllers {
                 //count the wordsTyped
                 this.statsObject.wordsTyped++;
                 //load a new word
-                this.selectWord();
+                this.genWord();
                 //empty the typing input
                 this.typed = '';
             }
         }
     }
     export class LockerroomController {
-
+        public wordsPerMin;
+        public keysPerMin;
+        public accuracy;
+        public stats;
+        constructor(private $stateParams: ng.ui.IStateParamsService) {
+            this.stats = $stateParams['stats'];
+            this.wordsPerMin = (this.stats['wordsTyped'] * 4);
+            this.keysPerMin = (this.stats['keysTyped'] * 4);
+            this.accuracy = Math.floor((((this.stats['keysTyped'] - this.stats['mistakes']) * 100 / this.stats['keysTyped'])));
+        }
     }
     export class ScoreboardController {
-
+        
     }
     export class AccountController {
 
@@ -191,6 +208,43 @@ namespace codingskills.Controllers {
     }
     export class AboutController {
         public message = 'Hello from the about page!';
+    }
+    export class NotFoundController {
+        constructor(
+            private $http: ng.IHttpService,
+            private wordService: codingskills.Services.WordService
+        ) {}
+        public query;
+        public page = 1;
+        public currentWords;
+        public wordLength = 5;
+        public filterWords() {
+            let unwantedChars = new RegExp("['/ .-]|[0-9]", 'g');
+            // let unwantedChars = new RegExp("['/]", 'g');
+            this.currentWords = this.currentWords.filter((word) => {
+                console.log(word, word.match(unwantedChars));
+                return !word.match(unwantedChars);
+            });
+        }
+        public getWords() {
+            let pattern = `[${this.query}]`;
+            this.$http.get('https://wordsapiv1.p.mashape.com/words/?mashape-key=L1Q3tAzB6rmshe27MNaoQquiTyTVp1aw7icjsnz3QOFVipm7Bv&letterPattern='
+                        + pattern + '&page=' + this.page + '&lettersMax=' + this.wordLength)
+                .then((results) => {
+                    this.currentWords = results.data['results'].data;
+                    this.filterWords();
+                }).catch((err) => {
+                    console.log("Error getting the words", err);
+                });
+        }
+        public saveWords() {
+            this.wordService.save({words: this.currentWords})
+                .then((results) => {
+                    console.log(results.message);
+                }).catch((err) => {
+                    console.log("Something went wrong", err);
+                })
+        }
     }
 
 }

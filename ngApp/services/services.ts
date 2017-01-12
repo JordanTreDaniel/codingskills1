@@ -1,4 +1,16 @@
-namespace codingSkills.Services {
+namespace codingskills.Services {
+    export class WordService {
+        constructor($resource: ng.resource.IResourceService) {
+            this.WordResource = $resource('/api/words');
+        }
+        public WordResource;
+        public get(patternObj) {
+            return this.WordResource.get(patternObj).$promise;
+        }
+        public save(words) {
+            return this.WordResource.save(words).$promise;
+        }
+    }
     export class UserService {
       private LoginResource;
       private LogoutResource;
@@ -36,4 +48,6 @@ namespace codingSkills.Services {
     }
 
   angular.module('codingskills').service('UserService', UserService);
+  angular.module('codingskills').service('wordService', WordService);
+  
 }
