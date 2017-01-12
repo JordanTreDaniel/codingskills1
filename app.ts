@@ -2,9 +2,14 @@ import * as express from 'express';
 import * as path from 'path';
 import * as favicon from 'serve-favicon';
 import * as logger from 'morgan';
+import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as ejs from 'ejs';
 import * as mongoose from 'mongoose';
+import routes from './routes/index';
+import users from './routes/users';
+import * as dotenv from 'dotenv';
+import wordsAPI from './api/words';
 import * as passport from 'passport';
 import * as session from 'express-session';
 import User from './models/Users';
@@ -80,8 +85,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components', express.static(path.join(__dirname, 'bower_components')));
 app.use('/ngApp', express.static(path.join(__dirname, 'ngApp')));
@@ -90,6 +94,10 @@ app.use('/api', express.static(path.join(__dirname, 'api')));
 app.use('/api', require('./api/users'));
 
 app.use('/', routes);
+
+app.use('/users', users);
+app.use('/api/words', wordsAPI);
+
 
 
 // redirect 404 to home for the sake of AngularJS client-side routes
