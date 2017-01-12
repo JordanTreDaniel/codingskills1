@@ -1,26 +1,42 @@
-
-<br>
-<br>
-<h1>Registration/Login page</h1>
-<div layout="row" layout-align="center center" layout-wrap>
-    <div flex='50'>
-        Login Form Will Go Here
-        <br>
-        lsfjsldfjldskf
-        <br>
-        
-        asldfkjalsdkfj
-        <br>
-        
-        asdlfjasldfkjalsdkj
-    </div>
-    <div flex='50'>
-        Registration Form Here
-        <br>
-            sldkfjlsdfj
-        <br>
-            sdlfkjasdlkf
-        <br>
-            sdlfkjsldkfj        
-    </div>
+<md-nav-bar>
+    <md-nav-item md-nav-sref="home">Home</md-nav-item>
+    <md-nav-item md-nav-sref="about">About</md-nav-item>
+    <md-nav-item md-nav-sref="gym">Gym</md-nav-item>
+    <md-nav-item md-nav-sref="account">Account</md-nav-item>
+    <md-nav-item md-nav-sref="loginregister">Login/Register</md-nav-item>
+</md-nav-bar>
+<ui-view></ui-view>
+<h2>Login</h2>
+<form ng-submit="controller.login(controller.user)">
+    <md-input-container>
+        <label>User Name</label>
+        <input type="text" ng-model="controller.user.username">
+    </md-input-container>
+    </br>
+    <md-input-container>
+        <label>Password</label>
+        <input type="password" ng-model="controller.user.password">
+    </md-input-container>
+    </br>
+    <md-button type="submit">Submit</md-button>
+</form>
+<div flex='50'>
+    Registration
+    <form ng-submit="controller.register(controller.newUser)">
+        <md-input-container>
+            <label>User Name</label>
+            <input type="text" ng-model="controller.newUser.username">
+        </md-input-container>
+        <md-input-container>
+            <label>Email</label>
+            <input type="email" ng-model="controller.newUser.email">
+        </md-input-container>
+        <br/>
+        <md-input-container>
+            <label>Password</label>
+            <input type="password" ng-model="controller.newUser.password">
+        </md-input-container>
+        </br>
+        <md-button type="submit">Submit</md-button>
+    </form>
 </div>
