@@ -1,3 +1,14 @@
+<div layout="row" layout-wrap layout-align="center center">
+    <md-checkbox ng-checked="controller.isIncluded(1)" ng-click="controller.toggleLevelInclusion(1)">a, s, d, f, g</md-checkbox>
+    <md-checkbox ng-checked="controller.isIncluded(2)" ng-click="controller.toggleLevelInclusion(2)">h, j, k, l, ;</md-checkbox>
+    <md-checkbox ng-checked="controller.isIncluded(3)" ng-click="controller.toggleLevelInclusion(3)">q, w, e, r, t</md-checkbox>
+    <md-checkbox ng-checked="controller.isIncluded(4)" ng-click="controller.toggleLevelInclusion(4)">y, u, i, o, p</md-checkbox>
+    <md-checkbox ng-checked="controller.isIncluded(5)" ng-click="controller.toggleLevelInclusion(5)">z, x, c, v, b</md-checkbox>
+    <md-checkbox ng-checked="controller.isIncluded(6)" ng-click="controller.toggleLevelInclusion(6)">b, n, m</md-checkbox>
+    <md-checkbox ng-checked="controller.isIncluded(7)" ng-click="controller.toggleLevelInclusion(7)">Numbers</md-checkbox>
+    <md-checkbox ng-checked="controller.isIncluded(8)" ng-click="controller.toggleLevelInclusion(8)">Symbols</md-checkbox>
+    
+</div>
 <div layout="row"> 
     <div>
         <span>This is the word you should be typing:</span>
@@ -21,3 +32,4 @@
             type="text">
     </div>
 </div>
+
