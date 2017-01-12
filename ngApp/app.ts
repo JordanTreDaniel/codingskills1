@@ -1,6 +1,18 @@
 namespace codingskills {
 
-    angular.module('codingskills', ['ui.router', 'ngResource', 'ngMaterial']).config((
+    angular.module('codingskills', ['ui.router', 'ngResource', 'ngMaterial'])
+    
+    .constant('LEVELS', {
+        1: ['a', 's', 'd', 'f', 'g'],
+        2: ['h', 'j', 'k', 'l', ';'],
+        3: ['q', 'w', 'e', 'r', 't'],
+        4: ['y', 'u', 'i', 'o', 'p'],
+        5: ['z', 'x', 'c', 'v', 'b'],
+        6: ['b', 'n', 'm'],
+        7: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+        8: ['-', '=', ';', "'", ',', '.', '/', '\\']
+    })
+    .config((
         $stateProvider: ng.ui.IStateProvider,
         $resourceProvider: ng.ui.IStateProvider,
         $httpProvider: ng.IHttpProvider,
@@ -9,6 +21,7 @@ namespace codingskills {
     ) => {
         // Define routes
         $stateProvider
+         
           .state('nav', {
               url: '',
               templateUrl: '/ngApp/views/nav.html',
