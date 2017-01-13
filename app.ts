@@ -84,18 +84,18 @@ app.use(passport.session());
 
 app.use('/api', require('./api/users'));
 
-app.get('/auth/facebook/callback', (req, res, next) => {
-    passport.authenticate('facebook', { failureRedirect: '/login' }, (e, user) => {
-      if (e) res.redirect('/loginregister');
-      req.login(user, (err) => {
-        if(err) res.redirect('/loginregister');
-        req.session.save((error) => {
-          if(error) res.redirect('/loginregister');
-          res.redirect('/loginregister');
-        })
-      })
-    })
-  });
+// app.get('/auth/facebook/callback', (req, res, next) => {
+//     passport.authenticate('facebook', { failureRedirect: '/login' }, (e, user) => {
+//       if (e) res.redirect('/loginregister');
+//       req.login(user, (err) => {
+//         if(err) res.redirect('/loginregister');
+//         req.session.save((error) => {
+//           if(error) res.redirect('/loginregister');
+//           res.redirect('/loginregister');
+//         })
+//       })
+//     })
+//   });
 
 app.use('/', require('./routes/index'));
 

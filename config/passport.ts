@@ -4,6 +4,7 @@ let LocalStrategy = require('passport-local').Strategy;
 let FacebookStrategy = require('passport-facebook').Strategy;
 import {User, IUser} from '../models/Users';
 import * as jwt from 'jsonwebtoken';
+import * as _ from 'lodash';
 
 passport.serializeUser(function(user, done) {
   done(null, user);
