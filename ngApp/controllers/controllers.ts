@@ -32,7 +32,7 @@ namespace codingskills.Controllers {
         }
     }
     export class GymController {
-         
+
     }
     export class CourtsideController {
         constructor(
@@ -117,7 +117,7 @@ namespace codingskills.Controllers {
                 //basically if they made a mistake
                 if (word[typed.length - 1] != typed[typed.length - 1]) {
                     this.statsObject.mistakes++;
-                    console.log("mistakes: ", this.statsObject.mistakes); 
+                    console.log("mistakes: ", this.statsObject.mistakes);
                 }
             }
             //Check for correct completion
@@ -144,7 +144,7 @@ namespace codingskills.Controllers {
         }
     }
     export class ScoreboardController {
-        
+
     }
     export class AccountController {
 
@@ -178,9 +178,8 @@ namespace codingskills.Controllers {
     export class LoginRegisterController {
         public user;
         public newUser;
-        public currentUser;
         public isLoggedIn;
-
+        public currentUser;
         public login(user) {
             this.UserService.login(user).then((res) => {
                 this.$state.go('account', null, { reload: true, notify: true });
@@ -198,10 +197,20 @@ namespace codingskills.Controllers {
             });
         }
 
+        public logout() {
+          this.UserService.logout().then((res) => {
+              this.$state.go('loginregister', null, { reload: true, notify: true });
+          }).catch((err) => {
+              console.log(err);
+          });
+        }
+
         constructor(
             private UserService: codingSkills.Services.UserService,
-            private $state: ng.ui.IStateService
+            private $state: ng.ui.IStateService,
+            currentUser: ng.IResolvedState
         ) {
+          this.currentUser = currentUser;
         }
 
 
