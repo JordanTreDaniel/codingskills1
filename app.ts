@@ -83,22 +83,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/api', require('./api/users'));
-
-// app.get('/auth/facebook/callback', (req, res, next) => {
-//     passport.authenticate('facebook', { failureRedirect: '/login' }, (e, user) => {
-//       if (e) res.redirect('/loginregister');
-//       req.login(user, (err) => {
-//         if(err) res.redirect('/loginregister');
-//         req.session.save((error) => {
-//           if(error) res.redirect('/loginregister');
-//           res.redirect('/loginregister');
-//         })
-//       })
-//     })
-//   });
-
 app.use('/', require('./routes/index'));
-
 app.use('/users', require('./api/users'));
 app.use('/api/words', require('./api/words'));
 
@@ -126,7 +111,7 @@ if (app.get('env') === 'development') {
   app.use((err, res) => {
     res.status(err['status'] || 500);
     res.render('error', {
-      message: err.message,
+      message: err['message'],
       error: err
     });
   });
@@ -134,10 +119,10 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use((err:Error, req, res, next) => {
+app.use((err, res, next) => {
   res.status(err['status'] || 500);
   res.render('error', {
-    message: err.message,
+    message: err['message'],
     error: {}
   });
 });
