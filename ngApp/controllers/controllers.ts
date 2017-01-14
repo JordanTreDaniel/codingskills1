@@ -5,11 +5,11 @@ namespace codingskills.Controllers {
         public self = this;
 
         constructor(
-            private UserService: codingSkills.Services.UserService,
+            private UserService: codingskills.Services.UserService,
             private $state: ng.ui.IStateService,
-            currentUser: ng.ui.IResolvedState
+            private Session: codingskills.Services.Session
         ) {
-            this.currentUser = currentUser;
+            this.currentUser = Session.getUser();
         }
 
         logout() {
@@ -25,14 +25,13 @@ namespace codingskills.Controllers {
         public currentUser;
         constructor(
             private $state: ng.ui.IStateService,
-            currentUser: ng.ui.IResolvedState
+            private Session: codingskills.Services.Session
         ) {
-
-            this.currentUser = currentUser;
+          this.currentUser = Session.getUser();
         }
     }
     export class GymController {
-         
+
     }
     export class CourtsideController {
         constructor(
@@ -117,7 +116,7 @@ namespace codingskills.Controllers {
                 //basically if they made a mistake
                 if (word[typed.length - 1] != typed[typed.length - 1]) {
                     this.statsObject.mistakes++;
-                    console.log("mistakes: ", this.statsObject.mistakes); 
+                    console.log("mistakes: ", this.statsObject.mistakes);
                 }
             }
             //Check for correct completion
@@ -144,43 +143,56 @@ namespace codingskills.Controllers {
         }
     }
     export class ScoreboardController {
-        
+
     }
     export class AccountController {
+      public currentUser;
+      constructor(
+          private Session: codingskills.Services.Session,
+          private $state: ng.ui.IStateService,
+          private UserService: codingskills.Services.UserService
+      ) {
+          this.currentUser = Session.getUser();
+      }
 
+      public logout() {
+        this.UserService.logout().then((res) => {
+            this.$state.go('loginregister', null, { reload: true, notify: true });
+        }).catch((err) => {
+            console.log(err);
+        });
+      }
     }
     export class MyAccountController {
         public avatar: string;
         public currentUser;
 
         constructor(
-            currentUser: ng.ui.IResolvedState,
+            private Session: codingskills.Services.Session,
             $state: ng.ui.IStateService
         ) {
-            this.currentUser = currentUser;
+            this.currentUser = Session.getUser();
+            console.log(this);
+            console.log(this.currentUser);
             //u must b auth br0 *redirected w/ angular*
             //should be done from stateProvider
-            if (!currentUser['username']) {
+            if (!this.currentUser['username']) {
                 $state.go('loginregister', null, { reload: true, notify: true });
             }
 
-            if (currentUser['facebookId']) {
-                this.avatar = `//graph.facebook.com/v2.8/${currentUser['facebookId']}/picture`;
+            if (this.currentUser['facebookId']) {
+                this.avatar = `//graph.facebook.com/v2.8/${this.currentUser['facebookId']}/picture`;
             } else {
                 this.avatar = '//placehold.it/350x350';
             }
         }
-
-
-
-
     }
+
     export class LoginRegisterController {
         public user;
         public newUser;
-        public currentUser;
         public isLoggedIn;
-
+        public currentUser;
         public login(user) {
             this.UserService.login(user).then((res) => {
                 this.$state.go('account', null, { reload: true, notify: true });
@@ -198,10 +210,20 @@ namespace codingskills.Controllers {
             });
         }
 
+        public logout() {
+          this.UserService.logout().then((res) => {
+              this.$state.go('loginregister', null, { reload: true, notify: true });
+          }).catch((err) => {
+              console.log(err);
+          });
+        }
+
         constructor(
-            private UserService: codingSkills.Services.UserService,
-            private $state: ng.ui.IStateService
+            private UserService: codingskills.Services.UserService,
+            private $state: ng.ui.IStateService,
+            private Session: codingskills.Services.Session
         ) {
+          this.currentUser = Session.getUser();
         }
 
 

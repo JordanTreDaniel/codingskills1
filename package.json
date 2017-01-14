@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "tsc": "tsc -w"
   },
   "dependencies": {
     "@types/angular": "^1.5.13",
@@ -22,9 +23,11 @@
     "@types/express": "^4.0.32",
     "@types/express-session": "0.0.32",
     "@types/jsonwebtoken": "^7.2.0",
+    "@types/lodash": "^4.14.50",
     "@types/mocha": "^2.2.34",
     "@types/mongoose": "^4.7.2",
     "@types/morgan": "^1.7.31",
+    "@types/ngstorage": "^0.3.33",
     "@types/passport": "^0.3.1",
     "@types/passport-facebook": "^1.0.29",
     "@types/passport-local": "^1.0.29",

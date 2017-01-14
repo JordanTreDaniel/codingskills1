@@ -3,9 +3,7 @@ import * as mongoose from 'mongoose';
 import * as passport from 'passport';
 import * as jwt from 'jsonwebtoken';
 import * as session from 'express-session';
-import methods from './methods';
-
-import User from './../models/Users';
+import {User, IUser } from './../models/Users';
 let router = express.Router();
 
 router.get('/users/:id', function(req, res, next) {
@@ -18,7 +16,6 @@ router.get('/users/:id', function(req, res, next) {
 
 //CONSTANTLY RETURNS 200 because we are always authorized to check.
 router.get('/currentuser', (req, res, next) => {
-  if (!req.user) return res.json({});
   return res.json(req.user);
 });
 
@@ -38,13 +35,25 @@ router.post('/login/local', function(req, res, next) {
     return res.status(400).json({message: "Please fill out every field"});
   }
 
-  passport.authenticate('local', function(err, user, info) {
+  passport.authenticate('local', {session:true}, function(err, user, info) {
     if(err) return next(err);
-    if(user) return methods.setSession(req, res, next, user);
-    return res.status(400).json(info);
+    req.logIn(user, (err) => {
+      if (err) return res.status(500).json({message: 'login failed'});
+      req.session.save(function (err){
+        if (err) return res.sendStatus(500).json({message: 'session failed'});
+        return res.json({message: 'Session successful.'})
+      });
+    });
   })(req, res, next);
 });
 
-router.get('/logout/local', methods.destroySession);
+router.get('/logout/local', (req, res, next) => {
+  req.session.destroy((err) => {
+   if (err) return res.status(500).json({message: 'still authenticated, please try again.'});
+   req.logout();
+   req.user = null;
+   return res.json({isAuthenticated: req.isAuthenticated()});
+ });
+});
 
 export = router;

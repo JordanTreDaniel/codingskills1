@@ -1,17 +1,6 @@
 namespace codingskills {
 
-    angular.module('codingskills', ['ui.router', 'ngResource', 'ngMaterial'])
-    
-    .constant('LEVELS', {
-        1: ['a', 's', 'd', 'f', 'g'],
-        2: ['h', 'j', 'k', 'l', ';'],
-        3: ['q', 'w', 'e', 'r', 't'],
-        4: ['y', 'u', 'i', 'o', 'p'],
-        5: ['z', 'x', 'c', 'v', 'b'],
-        6: ['b', 'n', 'm'],
-        7: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
-        8: ['-', '=', ';', "'", ',', '.', '/', '\\']
-    })
+    angular.module('codingskills', ['ngStorage','ui.router', 'ngResource', 'ngMaterial'])
     .config((
         $stateProvider: ng.ui.IStateProvider,
         $resourceProvider: ng.ui.IStateProvider,
@@ -21,7 +10,6 @@ namespace codingskills {
     ) => {
         // Define routes
         $stateProvider
-         
           .state('nav', {
               url: '',
               templateUrl: '/ngApp/views/nav.html',
@@ -29,15 +17,16 @@ namespace codingskills {
               abstract: true,
               controllerAs: 'vm',
               resolve: {
-                  currentUser: [
-                    'UserService', '$state', (UserService, $state) => {
-                      return UserService.getCurrentUser((user) => {
-                        return user;
-                      }).catch((e) => {
-                        return { username: false };
-                      });
-                    }]
-                }
+                currentUser: ['Session', function (Session) {
+                  return Session.getUser();
+                }],
+                isAuthenticated: ['Session', function (Session) {
+                  return Session.isAuthenticated();
+                }],
+                currentNavItem: ['$state', function ($state) {
+                  return $state.current.name;
+                }]
+              }
           })
           .state('home', {
               url: '/',
@@ -89,7 +78,8 @@ namespace codingskills {
               url: '/account',
               templateUrl: '/ngApp/views/account.html',
               controller: codingskills.Controllers.AccountController,
-              parent: 'nav'
+              parent: 'nav',
+              controllerAs: 'controller'
           })
           .state('myaccount', {
               url: '/:username',
@@ -134,35 +124,60 @@ namespace codingskills {
         });
 
         $httpProvider.interceptors.push('authInterceptor');
-    }).factory('authInterceptor',
-      ['$q','$location',
-      function ($q, $location) {
+    }).factory('authInterceptor', function ($rootScope, $q, AUTH_EVENTS) {
       return {
-        // Add authorization token to headers PER req
-        request: function (config) {
-          config.headers = config.headers || {};
-          return config;
-        },
-
-        // Intercept 401s/500s and redirect you to login
-        responseError: function(response) {
-          if(response.status === 401) {
-            // good place to explain to the user why or redirect
-            console.info(`this account needs to authenticate to ${response.config.method} ${response.config.url}`);
-          }
-          if(response.status === 403) {
-            alert('unauthorized permission for your account.');
-            // good place to explain to the user why or redirect
-            // remove any stale tokens
-            return $q.reject(response);
-          } else {
-            return $q.reject(response);
-          }
+        responseError: function (response) {
+          $rootScope.$broadcast({
+            401: AUTH_EVENTS.notAuthenticated,
+            403: AUTH_EVENTS.notAuthorized,
+            419: AUTH_EVENTS.sessionTimeout,
+            440: AUTH_EVENTS.sessionTimeout
+          }[response.status], response);
+          return $q.reject(response);
         }
-      }
-    }])
+      };
+    })
+    .run(
+      [
+        '$rootScope',
+        'UserService',
+        '$sessionStorage',
+        'Session',
+        '$state',
+        'AUTH_EVENTS',
+        (
+          $rootScope,
+          UserService,
+          $sessionStorage,
+          Session,
+          $state: ng.ui.IStateService,
+          AUTH_EVENTS
+        ) => {
+          $rootScope.$on('$stateChangeStart', (event, next) => {
+            let authorizedRoles = false;
+            UserService.getCurrentUser().then((user) => {
+              $sessionStorage.user = user;
+            }).catch((user) => {
+              $sessionStorage.user = user;
+            });
 
+            if(next.data) {
+              authorizedRoles = next.data['authorizedRoles'] ? next.data['authorizedRoles'] : false;
+            }
 
-
-
+            if (authorizedRoles && !Session.isAuthorized(authorizedRoles)) {
+              event.preventDefault();
+              if(Session.isAuthenticated()){
+                //TODO dialog
+                // $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+                $state.go('home');
+              } else {
+                // $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+                $state.go('home');
+              }
+            }
+          });
+        }
+      ]
+    );
 }

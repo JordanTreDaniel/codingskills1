@@ -2,19 +2,19 @@ import * as passport from 'passport';
 import * as mongoose from 'mongoose';
 let LocalStrategy = require('passport-local').Strategy;
 let FacebookStrategy = require('passport-facebook').Strategy;
-import User from '../models/Users';
+import {User, IUser} from '../models/Users';
 import * as jwt from 'jsonwebtoken';
+import * as _ from 'lodash';
 
 passport.serializeUser(function(user, done) {
-  // console.log('serializeUser', user);
   done(null, user);
 });
 
-passport.deserializeUser(function(obj, done) {
-  User.findOne({_id: obj["id"]}, {passwordHash: 0, salt: 0}, (err, user) => {
-    if (err) done(null, {});
-    done(null, user);
-  });
+passport.deserializeUser(function(user:IUser, done) {
+  delete user.passwordHash;
+  delete user.salt;
+  let sessionUser = user;
+  done(null, sessionUser);
 });
 
 passport.use(new FacebookStrategy({
@@ -43,7 +43,6 @@ passport.use(new FacebookStrategy({
 ));
 
 passport.use(new LocalStrategy(function(username: String, password: string, done) {
-  console.log(username);
   User.findOne({ username: username }, function(err, user) {
     if(err) return done(err);
     if(!user) return done(null, false, { message: 'Incorrect username.' });
