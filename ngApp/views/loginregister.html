@@ -6,6 +6,10 @@
     <md-nav-item md-nav-sref="loginregister">Login/Register</md-nav-item>
 </md-nav-bar>
 <ui-view></ui-view>
+
+{{controller.currentUser | json:2}}
+
+<md-button ng-click="controller.logout()">Logout</md-button>
 <h2>Login</h2>
 <form ng-submit="controller.login(controller.user)">
     <md-input-container>

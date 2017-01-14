@@ -2,11 +2,13 @@ This is the main account page.
 
 <div layout="row" layout-align="center center" layout-wrap>
     <div flex='33'>
-        <a ui-sref="myaccount">Username Here</a>
+        <a ui-sref="myaccount" ng-if="controller.currentUser">{{controller.currentUser.username}}</a>
     </div>
     <div flex='33'>
-        <a ui-sref="loginregister">Login or Register</a>        
+        <a ui-sref="loginregister" ng-if="!controller.currentUser">Login or Register</a>
+        <md-button class="md-accent raised" ng-click="controller.logout()" ng-if="controller.currentUser">Logout</md-button>
     </div>
+
     <div flex='50'>
         <ui-view></ui-view>
     </div>

@@ -2,22 +2,15 @@ import * as express from 'express';
 import * as path from 'path';
 import * as favicon from 'serve-favicon';
 import * as logger from 'morgan';
-import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as ejs from 'ejs';
 import * as mongoose from 'mongoose';
-import routes from './routes/index';
-import users from './routes/users';
-import * as dotenv from 'dotenv';
+import * as cookieParser from 'cookie-parser';
 import wordsAPI from './api/words';
 import * as passport from 'passport';
 import * as session from 'express-session';
-import User from './models/Users';
+import {User, IUser} from './models/Users';
 const MongoStore = require('connect-mongo')(session);
-
-import routes from './routes/index';
-
-
 
 let app = express();
 
@@ -32,28 +25,6 @@ require("./config/passport");
 
 //config req.session your session
 app.set('trust proxy', 1); // trust first proxy
-let sess = {
-  maxAge: 172800000, // 2 days
-  secure: false,
-  httpOnly: true
-}
-
-//set to secure in production
-if (app.get('env') === 'production') {
-  sess.secure = true // serve secure cookies
-}
-
-//use session config
-app.use(session({
-  cookie: sess,
-  secret: process.env.SESSION_SECRET, // can support an array
-  store: new MongoStore({
-    url: process.env.MONGO_URI
-  }),
-  unset: 'destroy',
-  resave: false,
-  saveUninitialized: false //if nothing has changed.. do not restore cookie
-}));
 
 //connect to DB
 let dbc = mongoose.connect(process.env.MONGO_URI);
@@ -77,28 +48,44 @@ mongoose.connection.on('connected', () => {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+//STATIC SERVING
 app.use(logger('dev'));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components', express.static(path.join(__dirname, 'bower_components')));
 app.use('/ngApp', express.static(path.join(__dirname, 'ngApp')));
-app.use('/api', express.static(path.join(__dirname, 'api')));
+
+//API SERVING
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+let sess = {
+  maxAge: 172800000, // 2 days
+  secure: false,
+  httpOnly: true
+}
+
+if (app.get('env') === 'production') {
+  sess.secure = true
+}
+
+app.use(session({
+  cookie: sess,
+  secret: process.env.SESSION_SECRET,
+  store: new MongoStore({
+    url: process.env.MONGO_URI
+  }),
+  unset: 'destroy',
+  resave: false,
+  saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/api', require('./api/users'));
-
-app.use('/', routes);
-
-app.use('/users', users);
-app.use('/api/words', wordsAPI);
-
-
+app.use('/', require('./routes/index'));
+app.use('/users', require('./api/users'));
+app.use('/api/words', require('./api/words'));
 
 // redirect 404 to home for the sake of AngularJS client-side routes
 app.get('/*', function(req, res, next) {
@@ -108,7 +95,6 @@ app.get('/*', function(req, res, next) {
     return res.render('index');
   }
 });
-
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -122,10 +108,10 @@ app.use((req, res, next) => {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use((err:Error, req, res, next) => {
+  app.use((err, res) => {
     res.status(err['status'] || 500);
     res.render('error', {
-      message: err.message,
+      message: err['message'],
       error: err
     });
   });
@@ -133,10 +119,10 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use((err:Error, req, res, next) => {
+app.use((err, res, next) => {
   res.status(err['status'] || 500);
   res.render('error', {
-    message: err.message,
+    message: err['message'],
     error: {}
   });
 });

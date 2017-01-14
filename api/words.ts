@@ -24,4 +24,4 @@ router.post('/', (req, res, next) => {
     res.json({message: "I saved " + words.length + " words!"});
 });
 
-export default router;
+export = router;
