@@ -6,7 +6,7 @@ import * as bodyParser from 'body-parser';
 import * as ejs from 'ejs';
 import * as mongoose from 'mongoose';
 import * as cookieParser from 'cookie-parser';
-import wordsAPI from './api/words';
+// import wordsAPI from './api/words';
 import * as passport from 'passport';
 import * as session from 'express-session';
 import {User, IUser} from './models/Users';
