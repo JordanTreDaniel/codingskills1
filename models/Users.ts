@@ -13,8 +13,6 @@ export interface IUser extends mongoose.Document {
   email: { type: String, unique: true, lowercase: true },
   passwordHash: String,
   salt: String,
-  sessions: Object[],
-  levels: Number[],
   facebookId: String,
   facebook: IFacebook,
   setPassword(password: string): boolean,
@@ -28,8 +26,6 @@ let UserSchema = new mongoose.Schema({
   email: { type: String, unique: true, lowercase: true },
   passwordHash: String,
   salt: String,
-  sessions: {type: [Object], default: []},
-  levels: {type: [Number], default: [1]},
   facebookId: String,
   facebook: {
     token: String,
