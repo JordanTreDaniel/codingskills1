@@ -39,16 +39,30 @@ namespace codingskills.Controllers {
             private $state: ng.ui.IStateService,
             private wordService: codingskills.Services.WordService,
             private LEVELS,
+            private Session: codingskills.Services.Session
             ) {
+                this.currentUser = Session.getUser();
+                //How could I check to see if the controller has
+                //an actual user right there?
+                console.log("Current user is", this.currentUser);
                 this.genWord();
         }
-        public currentLevels = [1, 2];
+        //Only include the levels that the user has completed
+        public currentLevels;
+        //Set something to hold all lettersMax
         public currentLetters = [];
+        //Holds target word to be typed
         public currentWord;
         public typed;
+        //Difference between the word and what you have typed
         public difference;
         public gameRunning = false;
+        //Need current user to set up training session
+        public currentUser;
+        //To pass to the next state, 
+        //where the average will be calculated
         public statsObject = {
+            date: new Date(),
             mistakes: 0,
             wordsTyped: 0,
             keysTyped: 0,
@@ -79,27 +93,14 @@ namespace codingskills.Controllers {
         public genWord() {
             let wordLength = Math.floor(Math.random() * 7) + 1;
             let word = '';
+            this.currentLevels = this.currentUser.levels;
             this.setLetters();
             for (var i = 0; i < wordLength; i++) {
                 word += this.currentLetters[Math.floor(Math.random() * this.currentLetters.length)];
             }
             this.currentWord = word;
         }
-        //ng-click on the checkboxes to include or exclude
-        public toggleLevelInclusion(number) {
-            var idx = this.currentLevels.indexOf(number);
-            if (idx > -1) {
-                this.currentLevels.splice(idx, 1);
-            } else {
-                this.currentLevels.push(number);
-            }
-            this.setLetters();
-            console.log("Included levels are", this.currentLevels);
-        }
-        //Initialize the included checkboxes checked.
-        public isIncluded(number) {
-            return this.currentLevels.indexOf(number) > -1;
-        }
+        
         public keyDown(e) {
             let word = this.currentWord,
                 typed = this.typed;
