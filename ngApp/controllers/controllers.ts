@@ -39,20 +39,48 @@ namespace codingskills.Controllers {
             private $state: ng.ui.IStateService,
             private wordService: codingskills.Services.WordService,
             private LEVELS,
+            private Session: codingskills.Services.Session,
+            private gameService: codingskills.Services.GameService
             ) {
+                this.currentUser = Session.getUser();
+                //How could I check to see if the controller has
+                //an actual user right there?
+
+                //I have to check which levels you have completed
+                gameService.get({id: this.currentUser._id}).then((results) => {
+                    console.log("These are the games you've played", results.results);
+                    for (let x in results.results) {
+                        if (this.currentLevels.includes(x['owner'])) {
+                            continue;
+                        } else {
+                            this.currentLevels.push(x['owner']);
+                        }
+                    }
+                    this.currentLevels.sort();
+                });
+                console.log("Current user is", this.currentUser);
                 this.genWord();
         }
-        public currentLevels = [1, 2];
+        //Only include the levels that the user has completed
+        public currentLevels = [1];
+        //Set something to hold all lettersMax
         public currentLetters = [];
+        //Holds target word to be typed
         public currentWord;
         public typed;
+        //Difference between the word and what you have typed
         public difference;
         public gameRunning = false;
+        //Need current user to set up training session
+        public currentUser;
+        //To pass to the next state, 
+        //where the average will be calculated
         public statsObject = {
+            date: new Date(),
             mistakes: 0,
             wordsTyped: 0,
             keysTyped: 0,
-            errorRate: 0,
+            accuracy: 0,
             gameLength: 15000
         }
         //Initiliaze time-loop and stats counting
@@ -61,7 +89,9 @@ namespace codingskills.Controllers {
                 this.gameRunning = true;
                 console.log('game started? ', this.gameRunning);
                 let game = window.setTimeout(() => {
-
+                    //I have to assign these two properties to the game for tracking
+                    this.statsObject.owner = this.currentUser._id;
+                    this.statsObject.level = this.currentLevels[this.currentLevels.length - 1];
                     this.$state.go('lockerroom', {stats: this.statsObject});
                         }, this.statsObject.gameLength);
             }
@@ -85,21 +115,7 @@ namespace codingskills.Controllers {
             }
             this.currentWord = word;
         }
-        //ng-click on the checkboxes to include or exclude
-        public toggleLevelInclusion(number) {
-            var idx = this.currentLevels.indexOf(number);
-            if (idx > -1) {
-                this.currentLevels.splice(idx, 1);
-            } else {
-                this.currentLevels.push(number);
-            }
-            this.setLetters();
-            console.log("Included levels are", this.currentLevels);
-        }
-        //Initialize the included checkboxes checked.
-        public isIncluded(number) {
-            return this.currentLevels.indexOf(number) > -1;
-        }
+        
         public keyDown(e) {
             let word = this.currentWord,
                 typed = this.typed;
@@ -131,16 +147,29 @@ namespace codingskills.Controllers {
         }
     }
     export class LockerroomController {
+        constructor(
+            private $stateParams: ng.ui.IStateParamsService,
+            private $state: ng.ui.IStateService,
+            private gameService: codingskills.Services.GameService
+            ) {
+                this.stats = $stateParams['stats'];
+                if (isNaN(this.stats['accuracy'])) {
+                    $state.go('courtside');
+                }
+                this.wordsPerMin = (this.stats['wordsTyped'] * (60/this.stats.gameLength) * 1000);
+                this.keysPerMin = (this.stats['keysTyped'] * (60/this.stats.gameLength) * 1000);
+                this.accuracy = this.stats.accuracy = Math.floor((((this.stats['keysTyped'] - this.stats['mistakes']) * 100 / this.stats['keysTyped'])));
+                gameService.save({game: this.stats}).then((results) => {
+                    console.log("All saved", results);
+                }).catch((err) => {
+                    console.log("Err saving the game");
+                })
+        }
         public wordsPerMin;
         public keysPerMin;
         public accuracy;
         public stats;
-        constructor(private $stateParams: ng.ui.IStateParamsService) {
-            this.stats = $stateParams['stats'];
-            this.wordsPerMin = (this.stats['wordsTyped'] * 4);
-            this.keysPerMin = (this.stats['keysTyped'] * 4);
-            this.accuracy = Math.floor((((this.stats['keysTyped'] - this.stats['mistakes']) * 100 / this.stats['keysTyped'])));
-        }
+        
     }
     export class ScoreboardController {
 

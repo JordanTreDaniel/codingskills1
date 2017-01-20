@@ -11,6 +11,21 @@ namespace codingskills.Services {
             return this.WordResource.save(words).$promise;
         }
     }
+    export class GameService {
+      constructor($resource: ng.resource.IResourceService) {
+        this.GameResource = $resource('/api/games/:id');
+      }
+      private GameResource;
+      public save(game) {
+        return this.GameResource.save(game).$promise;
+      }
+      public get(id) {
+        return this.GameResource.get(id).$promise;
+      }
+      public delete(id) {
+        return this.GameResource.delete(id).$promise;
+      }
+    }
     export class UserService {
       private LoginResource;
       private LogoutResource;
@@ -97,5 +112,7 @@ namespace codingskills.Services {
   angular.module('codingskills').service('Session', Session);
   angular.module('codingskills').service('UserService', UserService);
   angular.module('codingskills').service('wordService', WordService);
+  angular.module('codingskills').service('gameService', GameService);
+  
 
 }
