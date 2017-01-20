@@ -20,16 +20,7 @@ namespace codingskills.Controllers {
             });
         }
     }
-    export class HomeController {
-        public message = 'Hello from the home page!';
-        public currentUser;
-        constructor(
-            private $state: ng.ui.IStateService,
-            private Session: codingskills.Services.Session
-        ) {
-          this.currentUser = Session.getUser();
-        }
-    }
+
     export class GymController {
 
     }
@@ -186,7 +177,7 @@ namespace codingskills.Controllers {
 
       public logout() {
         this.UserService.logout().then((res) => {
-            this.$state.go('loginregister', null, { reload: true, notify: true });
+            this.$state.go('home', null, { reload: true, notify: true });
         }).catch((err) => {
             console.log(err);
         });
@@ -206,7 +197,7 @@ namespace codingskills.Controllers {
             //u must b auth br0 *redirected w/ angular*
             //should be done from stateProvider
             if (!this.currentUser['username']) {
-                $state.go('loginregister', null, { reload: true, notify: true });
+                $state.go('home', null, { reload: true, notify: true });
             }
 
             if (this.currentUser['facebookId']) {
@@ -217,7 +208,7 @@ namespace codingskills.Controllers {
         }
     }
 
-    export class LoginRegisterController {
+    export class HomeController {
         public user;
         public newUser;
         public isLoggedIn;
@@ -233,7 +224,7 @@ namespace codingskills.Controllers {
         public register(user) {
             this.UserService.register(user).then((res) => {
                 alert('please login');
-                this.$state.go('loginregister', null, { reload: true, notify: true });
+                this.$state.go('home', null, { reload: true, notify: true });
             }).catch((err) => {
                 alert('Registration error: please try again.');
             });
@@ -241,7 +232,7 @@ namespace codingskills.Controllers {
 
         public logout() {
           this.UserService.logout().then((res) => {
-              this.$state.go('loginregister', null, { reload: true, notify: true });
+              this.$state.go('home', null, { reload: true, notify: true });
           }).catch((err) => {
               console.log(err);
           });

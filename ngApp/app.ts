@@ -6,6 +6,8 @@ namespace codingskills {
         $resourceProvider: ng.ui.IStateProvider,
         $httpProvider: ng.IHttpProvider,
         $urlRouterProvider: ng.ui.IUrlRouterProvider,
+        $mdThemingProvider: ng.material.IThemingProvider,
+        $mdIconProvider: ng.material.IIconProvider,
         $locationProvider: ng.ILocationProvider
     ) => {
         // Define routes
@@ -89,13 +91,7 @@ namespace codingskills {
               controllerAs: "controller",
               parent: 'account'
           })
-          .state('loginregister', {
-              url: '/registration',
-              templateUrl: '/ngApp/views/loginregister.html',
-              controller: codingskills.Controllers.LoginRegisterController,
-              controllerAs: "controller",
-              parent: 'account'
-          })
+       
 
 
 
@@ -113,6 +109,28 @@ namespace codingskills {
               templateUrl: '/ngApp/views/notFound.html',
               parent: 'nav'
           });
+          $mdThemingProvider.theme('default')
+        .backgroundPalette('grey', {
+            'default': '800'
+        })
+        .primaryPalette('green', {
+            'default': '300', // by default use shade 400 from the pink palette for primary intentions
+            'hue-1': '100', // use shade 100 for the <code>md-hue-1</code> class
+            'hue-2': '600', // use shade 600 for the <code>md-hue-2</code> class
+            'hue-3': 'A100' // use shade A100 for the <code>md-hue-3</code> class
+        })
+        .accentPalette('grey', {
+            'default': '700',
+            'hue-1': '900'
+        })
+
+    // If you specify less than all of the keys, it will inherit from the
+    // default shades
+        .warnPalette('red', {
+            'default': '900' // use shade 200 for default, and keep all other shades the same
+        });
+        const iconPath =  '/packages/planettraining_material-design-icons/bower_components/material-design-icons/sprites/svg-sprite/';
+
 
         // Handle request for non-existent route
         $urlRouterProvider.otherwise('/notFound');
