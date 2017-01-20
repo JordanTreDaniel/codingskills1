@@ -1,16 +1,59 @@
-<h2>Home</h2>
+<div style="background-image: url(https://static.pexels.com/photos/90807/pexels-photo-90807.jpeg)"></div>
 
+<div align="center">
+    <md-card md-theme="default" layout="column" layout-align="center center" flex="50" align="center">
+        <md-card-content>
+            <md-card-header md-colors="::{backgroundColor: 'default-primary-700'}">
+                <md-card-header-text layout-align="center center">
+                    <span class="md-headline" layout-align="center center">Welcome to Coding Skills! </span>
+                </md-card-header-text>
+            </md-card-header>
+            </br>
+            <span><font size="4"><strong>
+            _____Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</strong></font>
+        </span>
 
-
-<div class="container">
-
-    <div class="jumbotron text-center">
-        <h1><span class="fa fa-lock"></span> Node Authentication</h1>
-
-        <p>Login or Register with:</p>
-
-        <a href="/login/facebook" class="md-button"><span class="fa fa-facebook"></span> Facebook</a>
-
-    </div>
-
+        </md-card-content>
+        <md-card-footer>
+            <md-content layout-align="left">
+                <span class="md-headline" layout-align="left">Get Started Now!</span>
+                <md-card-actions layout="row" layout-align="left">
+                    <div align="left">
+                        <form ng-submit="controller.login(controller.user)">
+                            <md-input-container>
+                                <label>User Name</label>
+                                <input type="text" ng-model="controller.user.username">
+                            </md-input-container>
+                            </br>
+                            <md-input-container>
+                                <label>Password</label>
+                                <input type="password" ng-model="controller.user.password">
+                            </md-input-container>
+                            </br>
+                            <md-button type="submit">Log In</md-button>
+                        </form>
+                    </div>
+                    <div flex='50'>
+                        <form ng-submit="controller.register(controller.newUser)">
+                            <md-input-container>
+                                <label>User Name</label>
+                                <input type="text" ng-model="controller.newUser.username">
+                            </md-input-container>
+                            <md-input-container>
+                                <label>Email</label>
+                                <input type="email" ng-model="controller.newUser.email">
+                            </md-input-container>
+                            <br/>
+                            <md-input-container>
+                                <label>Password</label>
+                                <input type="password" ng-model="controller.newUser.password">
+                            </md-input-container>
+                            </br>
+                            <md-button type="submit">Register</md-button>
+                        </form>
+                    </div>
+                </md-card-actions>
+            </md-content>
+        </md-card-footer>
+    </md-card>
 </div>
