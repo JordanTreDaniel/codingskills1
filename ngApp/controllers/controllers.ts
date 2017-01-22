@@ -22,22 +22,14 @@ namespace codingskills.Controllers {
     }
 
     export class GymController {
-
-    }
-    export class CourtsideController {
         constructor(
-            private $http: ng.IHttpService,
-            private $state: ng.ui.IStateService,
-            private wordService: codingskills.Services.WordService,
-            private LEVELS,
+            private gameService: codingskills.Services.GameService,
             private Session: codingskills.Services.Session,
-            private gameService: codingskills.Services.GameService
-            ) {
-                this.currentUser = Session.getUser();
-                //How could I check to see if the controller has
-                //an actual user right there?
-
-                //I have to check which levels you have completed
+            private LEVELS,
+            private $state: ng.ui.IStateService
+        ) {
+            this.currentUser = Session.getUser();
+            //I have to check which levels you have completed
                 gameService.get({id: this.currentUser._id}).then((results) => {
                     console.log("These are the games you've played", results.results);
                     for (let x of results.results) {
@@ -61,6 +53,25 @@ namespace codingskills.Controllers {
                 }).catch((err) => {
                     console.log("Err fetching games", err);
                 });
+        }
+        public currentLevels = [1];
+        public currentUser;
+    }
+    export class CourtsideController {
+        constructor(
+            private $http: ng.IHttpService,
+            private $state: ng.ui.IStateService,
+            private wordService: codingskills.Services.WordService,
+            private LEVELS,
+            private Session: codingskills.Services.Session,
+            private gameService: codingskills.Services.GameService
+            ) {
+                this.currentUser = Session.getUser();
+                //How could I check to see if the controller has
+                //an actual user right there?
+
+                
+                this.setLetters();
                 this.genWord();
         }
         //Only include the levels that the user has completed
@@ -83,7 +94,7 @@ namespace codingskills.Controllers {
             wordsTyped: 0,
             keysTyped: 0,
             accuracy: 0,
-            gameLength: 15000
+            gameLength: 0
         }
         //Initiliaze time-loop and stats counting
         public runGame() {
@@ -111,7 +122,6 @@ namespace codingskills.Controllers {
         public genWord() {
             let wordLength = Math.floor(Math.random() * 7) + 1;
             let word = '';
-            this.setLetters();
             for (var i = 0; i < wordLength; i++) {
                 word += this.currentLetters[Math.floor(Math.random() * this.currentLetters.length)];
             }
