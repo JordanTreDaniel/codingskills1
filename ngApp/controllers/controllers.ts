@@ -40,16 +40,27 @@ namespace codingskills.Controllers {
                 //I have to check which levels you have completed
                 gameService.get({id: this.currentUser._id}).then((results) => {
                     console.log("These are the games you've played", results.results);
-                    for (let x in results.results) {
-                        if (this.currentLevels.includes(x['owner'])) {
+                    for (let x of results.results) {
+                        if (this.currentLevels.includes(x['level'])) {
                             continue;
                         } else {
-                            this.currentLevels.push(x['owner']);
+                            this.currentLevels.push(x['level']);
                         }
+                        console.log("Game", x, "Levels", this.currentLevels);
                     }
+                    //Levels should be sorted so that I can add most recent level and read it easily
                     this.currentLevels.sort();
+                    //I will progress you through the levels here
+                    //Checking to see if you have completed level one,
+                    //and that you haven't completed the last level already
+                    let nextLevel = this.currentLevels[this.currentLevels.length - 1] + 1;
+                    console.log("Current levels are", this.currentLevels, "next is", nextLevel);
+                    if (results.results.length > 0 && LEVELS[nextLevel]) {
+                        this.currentLevels.push(nextLevel);
+                    }
+                }).catch((err) => {
+                    console.log("Err fetching games", err);
                 });
-                console.log("Current user is", this.currentUser);
                 this.genWord();
         }
         //Only include the levels that the user has completed
