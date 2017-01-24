@@ -26,10 +26,10 @@ namespace codingskills.Controllers {
             private gameService: codingskills.Services.GameService,
             private Session: codingskills.Services.Session,
             private LEVELS,
-            private $state: ng.ui.IStateService
+            private $state: ng.ui.IStateService,
+            private $stateParams: ng.ui.IStateParamsService
         ) {
                 this.currentUser = Session.getUser();
-                console.log("User:", this.currentUser);
                 //Initialize game object to be passed to courtside
                 this.gameObject = {
                     date: new Date(),
@@ -44,7 +44,6 @@ namespace codingskills.Controllers {
                 }
                 //I have to check which levels you have completed
                 gameService.get({id: this.currentUser._id}).then((results) => {
-                    console.log("These are the games you've played", results.results);
                     //Use your game history to set the levels
                     for (let x of results.results) {
                         if (this.gameObject.levels.includes(x['topLevel'])) {
@@ -52,7 +51,6 @@ namespace codingskills.Controllers {
                         } else {
                             this.gameObject.levels.push(x['topLevel']);
                         }
-                        console.log("Game", x, "Levels", this.gameObject.levels);
                     }
                     //Levels should be sorted so that I can add most recent level and read it easily
                     this.gameObject.levels.sort();
@@ -69,6 +67,13 @@ namespace codingskills.Controllers {
                 }).catch((err) => {
                     console.log("Err fetching games", err);
                 });
+                //If you came from the locker room, & clicked next level,
+                //You will automatically start once game has been configured
+                console.log("The stateParams are", $stateParams)
+                console.log($stateParams['automaticallyStart']);
+                if ($stateParams['automaticallyStart']) {
+                    this.startPractice();
+                }
         }
         public currentUser;
         public gameObject;
@@ -199,6 +204,10 @@ namespace codingskills.Controllers {
         public keysPerMin;
         public accuracy;
         public stats;
+        public goToGym(bool) {
+            console.log("Going to the gym; Starting?", bool);
+            this.$state.go('gym', {automaticallyStart: bool}, {reload: true});
+        }
         
     }
     export class ScoreboardController {
