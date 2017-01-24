@@ -54,6 +54,7 @@ namespace codingskills {
               templateUrl: '/ngApp/views/courtside.html',
               controller: codingskills.Controllers.CourtsideController,
               controllerAs: 'controller',
+              params: {gameObject: {}},
               parent: 'gym'
           })
           .state('lockerroom', {

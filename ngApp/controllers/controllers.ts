@@ -28,39 +28,57 @@ namespace codingskills.Controllers {
             private LEVELS,
             private $state: ng.ui.IStateService
         ) {
-            this.currentUser = Session.getUser();
-            //I have to check which levels you have completed
+                this.currentUser = Session.getUser();
+                console.log("User:", this.currentUser);
+                //Initialize game object to be passed to courtside
+                this.gameObject = {
+                    date: new Date(),
+                    mistakes: 0,
+                    wordsTyped: 0,
+                    keysTyped: 0,
+                    accuracy: 0,
+                    gameLength: 10000, // 10 sec default gameLength
+                    levels: [1], // All levels that are included in the game
+                    level: 1, // The highest level of the game
+                    owner: this.currentUser._id,
+                }
+                //I have to check which levels you have completed
                 gameService.get({id: this.currentUser._id}).then((results) => {
                     console.log("These are the games you've played", results.results);
+                    //Use your game history to set the levels
                     for (let x of results.results) {
-                        if (this.currentLevels.includes(x['level'])) {
+                        if (this.gameObject.levels.includes(x['level'])) {
                             continue;
                         } else {
-                            this.currentLevels.push(x['level']);
+                            this.gameObject.levels.push(x['level']);
                         }
-                        console.log("Game", x, "Levels", this.currentLevels);
+                        console.log("Game", x, "Levels", this.gameObject.levels);
                     }
                     //Levels should be sorted so that I can add most recent level and read it easily
-                    this.currentLevels.sort();
+                    this.gameObject.levels.sort();
                     //I will progress you through the levels here
+                    let nextLevel = this.gameObject.levels[this.gameObject.levels.length - 1] + 1;
+                    console.log("Current levels are", this.gameObject.levels, "next is", nextLevel);
                     //Checking to see if you have completed level one,
                     //and that you haven't completed the last level already
-                    let nextLevel = this.currentLevels[this.currentLevels.length - 1] + 1;
-                    console.log("Current levels are", this.currentLevels, "next is", nextLevel);
                     if (results.results.length > 0 && LEVELS[nextLevel]) {
-                        this.currentLevels.push(nextLevel);
+                        this.gameObject.levels.push(nextLevel);
                     }
                 }).catch((err) => {
                     console.log("Err fetching games", err);
                 });
         }
-        public currentLevels = [1];
         public currentUser;
+        public gameObject;
+        public startPractice() {
+            this.$state.go('courtside', {gameObject: this.gameObject});
+        }
     }
     export class CourtsideController {
         constructor(
             private $http: ng.IHttpService,
             private $state: ng.ui.IStateService,
+            private $stateParams: ng.ui.IStateParamsService,
             private wordService: codingskills.Services.WordService,
             private LEVELS,
             private Session: codingskills.Services.Session,
@@ -70,12 +88,12 @@ namespace codingskills.Controllers {
                 //How could I check to see if the controller has
                 //an actual user right there?
 
-                
+                //Pull the game object from params to configure/track game
+                this.gameObject = $stateParams['gameObject'];
+
                 this.setLetters();
                 this.genWord();
         }
-        //Only include the levels that the user has completed
-        public currentLevels = [1];
         //Set something to hold all lettersMax
         public currentLetters = [];
         //Holds target word to be typed
@@ -84,29 +102,24 @@ namespace codingskills.Controllers {
         //Difference between the word and what you have typed
         public difference;
         public gameRunning = false;
-        //Need current user to set up training session
+
+        //Not sure if we still need current user in this state
         public currentUser;
+
         //To pass to the next state, 
-        //where the average will be calculated
-        public statsObject = {
-            date: new Date(),
-            mistakes: 0,
-            wordsTyped: 0,
-            keysTyped: 0,
-            accuracy: 0,
-            gameLength: 0
-        }
+        //where the average will be calculated,
+        //after it is recieved from the gym state
+        public gameObject;
+
         //Initiliaze time-loop and stats counting
         public runGame() {
-            if(this.statsObject.wordsTyped == 0 && !this.gameRunning) {
+            if(this.gameObject.wordsTyped == 0 && !this.gameRunning) {
                 this.gameRunning = true;
                 console.log('game started? ', this.gameRunning);
                 let game = window.setTimeout(() => {
-                    //I have to assign these two properties to the game for tracking
-                    this.statsObject.owner = this.currentUser._id;
-                    this.statsObject.level = this.currentLevels[this.currentLevels.length - 1];
-                    this.$state.go('lockerroom', {stats: this.statsObject});
-                        }, this.statsObject.gameLength);
+                    //Send to lockerroom once the game is done.
+                    this.$state.go('lockerroom', {stats: this.gameObject});
+                        }, this.gameObject.gameLength);
             }
         }
         //The substring from this.currentWord of what the user has yet to type
@@ -114,8 +127,8 @@ namespace codingskills.Controllers {
             this.difference = this.currentWord.substring(this.typed.length);
         }
         public setLetters() {
-            for (var i in this.currentLevels) {
-                this.currentLetters = this.currentLetters.concat(this.LEVELS[this.currentLevels[i]]);
+            for (var i in this.gameObject.levels) {
+                this.currentLetters = this.currentLetters.concat(this.LEVELS[this.gameObject.levels[i]]);
             }
         }
         //Sets correct letter set, generates a random word, and sets it to current word
@@ -140,17 +153,17 @@ namespace codingskills.Controllers {
                 console.log("BACKSPACE!");
             } else {
                 //count the keysTyped
-                this.statsObject.keysTyped++;
+                this.gameObject.keysTyped++;
                 //basically if they made a mistake
                 if (word[typed.length - 1] != typed[typed.length - 1]) {
-                    this.statsObject.mistakes++;
-                    console.log("mistakes: ", this.statsObject.mistakes);
+                    this.gameObject.mistakes++;
+                    console.log("mistakes: ", this.gameObject.mistakes);
                 }
             }
             //Check for correct completion
             if (this.typed === this.currentWord) {
                 //count the wordsTyped
-                this.statsObject.wordsTyped++;
+                this.gameObject.wordsTyped++;
                 //load a new word
                 this.genWord();
                 //empty the typing input
