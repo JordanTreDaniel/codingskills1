@@ -39,7 +39,7 @@ namespace codingskills.Controllers {
                     accuracy: 0,
                     gameLength: 10000, // 10 sec default gameLength
                     levels: [1], // All levels that are included in the game
-                    level: 1, // The highest level of the game
+                    topLevel: 1, // The highest level of the game
                     owner: this.currentUser._id,
                 }
                 //I have to check which levels you have completed
@@ -47,10 +47,10 @@ namespace codingskills.Controllers {
                     console.log("These are the games you've played", results.results);
                     //Use your game history to set the levels
                     for (let x of results.results) {
-                        if (this.gameObject.levels.includes(x['level'])) {
+                        if (this.gameObject.levels.includes(x['topLevel'])) {
                             continue;
                         } else {
-                            this.gameObject.levels.push(x['level']);
+                            this.gameObject.levels.push(x['topLevel']);
                         }
                         console.log("Game", x, "Levels", this.gameObject.levels);
                     }
@@ -64,6 +64,8 @@ namespace codingskills.Controllers {
                     if (results.results.length > 0 && LEVELS[nextLevel]) {
                         this.gameObject.levels.push(nextLevel);
                     }
+                    //Update the game object to reflect the highest level that you are on.
+                    this.gameObject.topLevel = this.gameObject.levels[this.gameObject.levels.length - 1];
                 }).catch((err) => {
                     console.log("Err fetching games", err);
                 });
@@ -90,6 +92,7 @@ namespace codingskills.Controllers {
 
                 //Pull the game object from params to configure/track game
                 this.gameObject = $stateParams['gameObject'];
+                console.log("GameObject from params", this.gameObject);
 
                 this.setLetters();
                 this.genWord();
@@ -178,6 +181,8 @@ namespace codingskills.Controllers {
             private gameService: codingskills.Services.GameService
             ) {
                 this.stats = $stateParams['stats'];
+                console.log("The gameObject", this.stats);
+                //I only want you on this state if you just got done practicing
                 if (isNaN(this.stats['accuracy'])) {
                     $state.go('courtside');
                 }
