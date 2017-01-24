@@ -47,22 +47,8 @@ namespace codingskills {
               templateUrl: '/ngApp/views/gym.html',
               controller: codingskills.Controllers.GymController,
               controllerAs: 'controller',
+              params: {automaticallyStart: false},
               parent: 'nav',
-          })
-          .state('courtside', {
-              url: '/courtside',
-              templateUrl: '/ngApp/views/courtside.html',
-              controller: codingskills.Controllers.CourtsideController,
-              controllerAs: 'controller',
-              parent: 'gym'
-          })
-          .state('lockerroom', {
-              url: '/lockerroom',
-              templateUrl: '/ngApp/views/lockerroom.html',
-              controller: codingskills.Controllers.LockerroomController,
-              controllerAs: 'controller',
-              params: {stats: {}},
-              parent: 'gym'
           })
           .state('scoreboard', {
               url: '/scoreboard',
@@ -72,6 +58,23 @@ namespace codingskills {
               parent: 'gym'
           })
 
+
+          .state('courtside', {
+              url: '/courtside',
+              templateUrl: '/ngApp/views/courtside.html',
+              controller: codingskills.Controllers.CourtsideController,
+              controllerAs: 'controller',
+              params: {gameObject: {}},
+              parent: 'nav'
+          })
+          .state('lockerroom', {
+              url: '/lockerroom',
+              templateUrl: '/ngApp/views/lockerroom.html',
+              controller: codingskills.Controllers.LockerroomController,
+              controllerAs: 'controller',
+              params: {stats: {}},
+              parent: 'nav'
+          })
 
 
 
