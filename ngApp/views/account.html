@@ -1,15 +1,16 @@
-This is the main account page.
-
-<div layout="row" layout-align="center center" layout-wrap>
-    <div flex='33'>
-        <a ui-sref="myaccount" ng-if="controller.currentUser">{{controller.currentUser.username}}</a>
-    </div>
-    <div flex='33'>
-        <a ui-sref="loginregister" ng-if="!controller.currentUser">Login or Register</a>
-        <md-button class="md-accent raised" ng-click="controller.logout()" ng-if="controller.currentUser">Logout</md-button>
-    </div>
-
-    <div flex='50'>
-        <ui-view></ui-view>
-    </div>
-</div>
+<div align="center">
+    <md-card md-theme="default" layout="column" layout-align="center center" flex="60" align="center">
+        <md-card-content>
+            <md-card-header md-colors="::{backgroundColor: 'default-primary-700'}">
+                <md-card-header-text layout-align="center center">
+                    <span class="md-headline" layout-align="center center">{{controller.currentUser.username}}'s Account Information</span>
+                </md-card-header-text>
+            </md-card-header>
+            <md-card-content>
+                <span> Information on current level and such (TODO)</span>
+                <img ng-src="{{controller.currentUser.image}}" style="max-height:280px" />
+            </md-card-content>
+            <md-card-footer>
+                <span>buttons to edit or go to gym</span>
+            </md-card-footer>
+    </md-card>

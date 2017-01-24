@@ -23,6 +23,7 @@ router.post('/Register', function(req, res, next) {
   let user = new User();
   user.username = req.body.username;
   user.email = req.body.email;
+  user.image = req.body.image;
   user.setPassword(req.body.password);
   user.save(function(err, user) {
     if(err) return next(err);

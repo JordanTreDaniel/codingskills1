@@ -3,6 +3,6 @@
     <md-nav-item md-nav-sref="about">About</md-nav-item>
     <md-nav-item md-nav-sref="gym">Gym</md-nav-item>
     <md-nav-item md-nav-sref="account">Account</md-nav-item>
-    <md-nav-item md-nav-sref="loginregister">Login/Register</md-nav-item>
+    <md-button ng-if="vm.currentUser.user">Logout</md-button>
 </md-nav-bar>
 <ui-view></ui-view>

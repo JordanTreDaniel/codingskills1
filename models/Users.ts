@@ -11,6 +11,7 @@ export interface IFacebook {
 export interface IUser extends mongoose.Document {
   username: { type: String, lowercase: true, unique: true},
   email: { type: String, unique: true, lowercase: true },
+  image: { type: String}
   passwordHash: String,
   salt: String,
   facebookId: String,
@@ -24,13 +25,14 @@ export interface IUser extends mongoose.Document {
 let UserSchema = new mongoose.Schema({
   username: { type: String, lowercase: true, unique: true},
   email: { type: String, unique: true, lowercase: true },
+  image: { type: String, default: "https://diasp.eu/assets/user/default.png"},
   passwordHash: String,
   salt: String,
   facebookId: String,
   facebook: {
     token: String,
     name: String,
-    email: String
+    email: String,
   },
   roles: {type: Array, default: ['user']}
 });

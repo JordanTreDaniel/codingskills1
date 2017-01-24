@@ -167,6 +167,7 @@ namespace codingskills.Controllers {
     }
     export class AccountController {
       public currentUser;
+      
       constructor(
           private Session: codingskills.Services.Session,
           private $state: ng.ui.IStateService,
