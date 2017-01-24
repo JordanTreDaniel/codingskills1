@@ -5,3 +5,12 @@ The place where we will show the player how they did in the game.
 <h3>You typed at {{controller.keysPerMin}} keys per minute</h3>
 <h3>You made {{controller.stats.mistakes}} mistakes</h3>
 <h3>You were {{controller.accuracy}}% accurate</h3>
+
+<div layout="row">
+    <md-button class="md-raised md-primary" ng-click="controller.goToGym(true)">
+        Next level
+    </md-button>
+    <md-button class="md-raised md-primary" ng-click="controller.goToGym(false)">
+        Back to Gym
+    </md-button>
+</div>

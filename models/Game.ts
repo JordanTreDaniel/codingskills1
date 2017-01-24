@@ -5,10 +5,10 @@ export interface IGame extends mongoose.Document {
     mistakes: Number,
     wordsTyped: Number,
     keysTyped: Number,
-    errorRate: Number,
     gameLength: Number,
     accuracy: Number,
-    level: Number,
+    topLevel: Number,
+    levels: Number[],
     owner: String
 }
 let gameSchema = new mongoose.Schema({
@@ -16,10 +16,10 @@ let gameSchema = new mongoose.Schema({
     mistakes: Number,
     wordsTyped: Number,
     keysTyped: Number,
-    errorRate: Number,
     gameLength: Number,
     accuracy: Number,
-    level: Number,
+    topLevel: Number,
+    levels: [Number],
     owner: String
 });
 
