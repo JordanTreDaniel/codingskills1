@@ -261,11 +261,13 @@ namespace codingskills.Controllers {
         public newUser;
         public isLoggedIn;
         public currentUser;
+        public formWorking = false;
+        public formErr;
         public login(user) {
             this.UserService.login(user).then((res) => {
                 this.$state.go('account', null, { reload: true, notify: true });
             }).catch((err) => {
-                alert('Bunk login, please try again.');
+                this.formErr = "Bad login"
             });
         }
 
@@ -274,7 +276,7 @@ namespace codingskills.Controllers {
                 alert('please login');
                 this.$state.go('home', null, { reload: true, notify: true });
             }).catch((err) => {
-                alert('Registration error: please try again.');
+                this.formErr = "Error registering. This is usually caused by trying to register an email or username that already exists."
             });
         }
 
@@ -285,7 +287,15 @@ namespace codingskills.Controllers {
               console.log(err);
           });
         }
-
+        public formWorkTrue() {
+            this.formWorking = true;
+        }
+        public formWorkFalse() {
+            this.formWorking = false;
+        }
+        public clearErrMsg() {
+            this.formErr = "";
+        }
         constructor(
             private UserService: codingskills.Services.UserService,
             private $state: ng.ui.IStateService,
