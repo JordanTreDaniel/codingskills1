@@ -9,3 +9,8 @@ body.home {
     background-color: #38761D;
     color: lightgray;
 }
+
+.formError {
+    color: red;
+    font-weight: bold;
+}
