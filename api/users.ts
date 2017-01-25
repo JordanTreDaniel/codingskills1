@@ -12,7 +12,7 @@ router.get('/users/:id', function(req, res, next) {
   }).catch((err) => {
     return res.status(404).json({err: 'User not found.'})
   });
-});
+}); 
 
 //CONSTANTLY RETURNS 200 because we are always authorized to check.
 router.get('/currentuser', (req, res, next) => {
