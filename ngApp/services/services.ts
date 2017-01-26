@@ -96,14 +96,16 @@ namespace codingskills.Services {
         if (!angular.isArray(roles)) {
           roles = [roles];
         }
-
+        //This is the only part of the 
+        //route security that perplexes me,
+        //I changed the if to check for regular users
         return roles.some((v, k) => {
           for(let i in user['roles']) {
-            if (user['roles'][i] === v) {
+            if (user['roles'][i] === 'user') {
               return true;
             }
           }
-        });
+        }); 
       }
 
       getUser() {

@@ -7,14 +7,18 @@ namespace codingskills.Controllers {
         constructor(
             private UserService: codingskills.Services.UserService,
             private $state: ng.ui.IStateService,
-            private Session: codingskills.Services.Session
+            private Session: codingskills.Services.Session,
+            private $stateParams: ng.ui.IStateParamsService
         ) {
+            if ($stateParams['destination'] === 'home') {
+                $state.go('home');
+            }
             this.currentUser = Session.getUser();
-        }
+        } 
 
         logout() {
             this.UserService.logout().then(() => {
-                this.$state.go('home', null, { reload: true, notify: true });
+                this.$state.go('nav', {destination: 'home'}, { reload: true, notify: true });
             }).catch(() => {
                 throw new Error('Unsuccessful logout');
             });
@@ -251,8 +255,8 @@ namespace codingskills.Controllers {
                 if (isNaN(this.stats['accuracy'])) {
                     $state.go('courtside');
                 }
-                this.wordsPerMin = (this.stats['wordsTyped'] * (60/this.stats.gameLength) * 1000);
-                this.keysPerMin = (this.stats['keysTyped'] * (60/this.stats.gameLength) * 1000);
+                this.wordsPerMin = Math.floor(this.stats['wordsTyped'] * (60/this.stats.gameLength) * 1000);
+                this.keysPerMin = Math.floor(this.stats['keysTyped'] * (60/this.stats.gameLength) * 1000);
                 this.accuracy = this.stats.accuracy = Math.floor((((this.stats['keysTyped'] - this.stats['mistakes']) * 100 / this.stats['keysTyped'])));
                 gameService.save({game: this.stats}).catch((err) => {
                     console.log("Err saving the game");

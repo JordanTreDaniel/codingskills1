@@ -16,8 +16,8 @@ namespace codingskills {
               url: '',
               templateUrl: '/ngApp/views/nav.html',
               controller: codingskills.Controllers.NavController,
-              abstract: true,
               controllerAs: 'vm',
+              params: {destination: ""},
               resolve: {
                 currentUser: ['Session', function (Session) {
                   return Session.getUser();
@@ -49,23 +49,25 @@ namespace codingskills {
               controllerAs: 'controller',
               params: {automaticallyStart: false},
               parent: 'nav',
+              data: {authorizedRoles: true}
           })
+
+          
           .state('scoreboard', {
               url: '/scoreboard',
               templateUrl: '/ngApp/views/scoreboard.html',
               controller: codingskills.Controllers.ScoreboardController,
               controllerAs: 'controller',
-              parent: 'gym'
+              parent: 'nav'
           })
-
-
           .state('courtside', {
               url: '/courtside',
               templateUrl: '/ngApp/views/courtside.html',
               controller: codingskills.Controllers.CourtsideController,
               controllerAs: 'controller',
               params: {gameObject: {}},
-              parent: 'nav'
+              parent: 'nav',
+              data: {authorizedRoles: true}
           })
           .state('lockerroom', {
               url: '/lockerroom',
@@ -73,7 +75,8 @@ namespace codingskills {
               controller: codingskills.Controllers.LockerroomController,
               controllerAs: 'controller',
               params: {stats: {}},
-              parent: 'nav'
+              parent: 'nav',
+              data: {authorizedRoles: true}
           })
 
 
@@ -85,14 +88,16 @@ namespace codingskills {
               templateUrl: '/ngApp/views/account.html',
               controller: codingskills.Controllers.AccountController,
               parent: 'nav',
-              controllerAs: 'controller'
+              controllerAs: 'controller',
+              data: {authorizedRoles: true}
           })
           .state('myaccount', {
               url: '/:username',
               templateUrl: '/ngApp/views/myaccount.html',
               controller: codingskills.Controllers.MyAccountController,
               controllerAs: "controller",
-              parent: 'account'
+              parent: 'account',
+              data: {authorizedRoles: true}
           })
        
 
@@ -196,7 +201,7 @@ namespace codingskills {
               } else {
                 // $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
                 $state.go('home');
-              }
+              } 
             }
           });
         }
