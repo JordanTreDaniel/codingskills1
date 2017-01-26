@@ -16,64 +16,21 @@
 
         </md-card-content>
         <md-card-footer>
-<<<<<<< HEAD
-            <md-content layout-align="center center">
-                <span class="md-headline" layout-align="center center">Get Started Now!</span>
-                <md-card-actions layout="row">
-                    <div flex="50">
-                        <form ng-submit="controller.login(controller.user)">
-                            <md-input-container>
-                                <label>User Name</label>
-                                <input type="text" ng-model="controller.user.username">
-                            </md-input-container>
-                            </br>
-                            <md-input-container>
-                                <label>Password</label>
-                                <input type="password" ng-model="controller.user.password">
-                            </md-input-container>
-                            </br>
-                            <md-button type="submit">Log In</md-button>
-                        </form>
-                    </div>
-                    <div flex='50'>
-                        <form ng-submit="controller.register(controller.newUser)">
-                            <md-input-container>
-                                <label>User Name</label>
-                                <input type="text" ng-model="controller.newUser.username">
-                            </md-input-container>
-                            <md-input-container>
-                                <label>Email</label>
-                                <input type="email" ng-model="controller.newUser.email">
-                            </md-input-container>
-                            <br/>
-                            <md-input-container>
-                                <label>Password</label>
-                                <input type="password" ng-model="controller.newUser.password">
-                            </md-input-container>
-                            <md-input-container>
-                                <label>Profile Picture</label>
-                                <input type="text" ng-model="controller.newUser.image">
-                            </md-input-container>
-                            </br>
-                            <md-button type="submit">Register</md-button>
-                        </form>
-=======
+
             <md-content layout-align="left">
                 <span class="md-headline" layout-align="left">Get Started Now!</span>
                 <md-card-actions layout="column" layout-align="left">
                     <div layout="row">
-                        <div align="left">
-                            <form ng-submit="controller.login(controller.user)" novalidate name="loginForm">
+                        <div flex="50" align="center center">
+                            <form ng-submit="controller.login(controller.user)" novalidate name="loginForm" md-colors="">
                                 <md-input-container>
                                     <label>User Name</label>
-                                    <input type="text" ng-model="controller.user.username" name="lusername" 
-                                        ng-change="controller.clearErrMsg()" ng-change="controller.formWorkTrue()" ng-blur="controller.formWorkFalse()" ng-required="true">
+                                    <input type="text" ng-model="controller.user.username" name="lusername" ng-change="controller.clearErrMsg()" ng-change="controller.formWorkTrue()" ng-blur="controller.formWorkFalse()" ng-required="true">
                                 </md-input-container>
                                 </br>
                                 <md-input-container>
                                     <label>Password</label>
-                                    <input type="password" ng-model="controller.user.password" name="lpassword"
-                                        ng-change="controller.clearErrMsg()" ng-change="controller.formWorkTrue()" ng-blur="controller.formWorkFalse()" ng-required="true">
+                                    <input type="password" ng-model="controller.user.password" name="lpassword" ng-change="controller.clearErrMsg()" ng-change="controller.formWorkTrue()" ng-blur="controller.formWorkFalse()" ng-required="true">
                                 </md-input-container>
                                 </br>
                                 <md-button type="submit" ng-disabled="loginForm.$invalid">Log In</md-button>
@@ -83,19 +40,16 @@
                             <form ng-submit="controller.register(controller.newUser)" name="regForm" novalidate>
                                 <md-input-container>
                                     <label>User Name</label>
-                                    <input type="text" ng-model="controller.newUser.username" name="rusername"
-                                        ng-change="controller.clearErrMsg()" ng-change="controller.formWorkTrue()" ng-blur="controller.formWorkFalse()" ng-required="true">
+                                    <input type="text" ng-model="controller.newUser.username" name="rusername" ng-change="controller.clearErrMsg()" ng-change="controller.formWorkTrue()" ng-blur="controller.formWorkFalse()" ng-required="true">
                                 </md-input-container>
                                 <md-input-container>
                                     <label>Email</label>
-                                    <input type="email" ng-model="controller.newUser.email" name="remail"
-                                        ng-change="controller.clearErrMsg()" ng-change="controller.formWorkTrue()" ng-blur="controller.formWorkFalse()" ng-required="true">
+                                    <input type="email" ng-model="controller.newUser.email" name="remail" ng-change="controller.clearErrMsg()" ng-change="controller.formWorkTrue()" ng-blur="controller.formWorkFalse()" ng-required="true">
                                 </md-input-container>
                                 <br/>
                                 <md-input-container>
                                     <label>Password</label>
-                                    <input type="password" ng-model="controller.newUser.password" name="rpassword"
-                                        ng-change="controller.clearErrMsg()" ng-change="controller.formWorkTrue()" ng-blur="controller.formWorkFalse()" ng-required="true">
+                                    <input type="password" ng-model="controller.newUser.password" name="rpassword" ng-change="controller.clearErrMsg()" ng-change="controller.formWorkTrue()" ng-blur="controller.formWorkFalse()" ng-required="true">
                                 </md-input-container>
                                 </br>
                                 <md-button type="submit" ng-disabled="regForm.$invalid">
@@ -106,22 +60,21 @@
                     </div>
                     <div layout="column">
                         <!-- This message will show if the user leaves out a username for either form-->
-                        <span class="formError"ng-show="(loginForm.lusername.$error.required && loginForm.lusername.$touched) || (regForm.rusername.$error.required && regForm.rusername.$touched)">
+                        <span class="formError" ng-show="(loginForm.lusername.$error.required && loginForm.lusername.$touched) || (regForm.rusername.$error.required && regForm.rusername.$touched)">
                             The username is required
                         </span><br>
                         <!-- This message will show for either form missing the password -->
-                        <span class="formError"ng-show="(loginForm.lpassword.$error.required && loginForm.lpassword.$touched) || (regForm.rpassword.$error.required && regForm.rpassword.$touched)">
+                        <span class="formError" ng-show="(loginForm.lpassword.$error.required && loginForm.lpassword.$touched) || (regForm.rpassword.$error.required && regForm.rpassword.$touched)">
                             The password is required
                         </span><br>
                         <!-- This message will show if the register form is missing email or if email is in wrong format-->
-                        <span class="formError"ng-show="(regForm.remail.$error.required || regForm.remail.$invalid) && regForm.remail.$touched">
+                        <span class="formError" ng-show="(regForm.remail.$error.required || regForm.remail.$invalid) && regForm.remail.$touched">
                             The email is required in the format "youremail@yourprovider.something"
                         </span><br>
                         <!-- This should show a dynamically placed message if either form is submitted and you aren't editing a form-->
-                        <span class="formError"ng-show="(loginForm.$submitted || regForm.$submitted) && !controller.formWorking">
+                        <span class="formError" ng-show="(loginForm.$submitted || regForm.$submitted) && !controller.formWorking">
                             {{controller.formErr}}
                         </span><br/>
->>>>>>> eb27bdc58d251beb7ec76e10c09e66056375f382
                     </div>
                 </md-card-actions>
             </md-content>

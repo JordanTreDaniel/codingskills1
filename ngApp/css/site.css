@@ -1,24 +1,20 @@
 body {
-    background: url(https://static.pexels.com/photos/90807/pexels-photo-90807.jpeg) no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+    background: url(https://static.pexels.com/photos/90807/pexels-photo-90807.jpeg) center center fixed;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 .md-button {
     font-size: 16px;
-    font-family: Arial, Helvetica, sans-serif;
-<<<<<<< HEAD
-    background-color: grey;
-    color: whitesmoke;
-=======
-    background-color: #38761D;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    background-color: dodgerblue;
     color: lightgray;
+}
+
+md-nav-bar .md-nav-bar {
+    background: dodgerblue
 }
 
 .formError {
     color: red;
     font-weight: bold;
->>>>>>> eb27bdc58d251beb7ec76e10c09e66056375f382
 }
