@@ -14,7 +14,7 @@ namespace codingskills.Controllers {
 
         logout() {
             this.UserService.logout().then(() => {
-                this.$state.go('account', null, { reload: true, notify: true });
+                this.$state.go('home', null, { reload: true, notify: true });
             }).catch(() => {
                 throw new Error('Unsuccessful logout');
             });
@@ -30,6 +30,7 @@ namespace codingskills.Controllers {
             private $stateParams: ng.ui.IStateParamsService
         ) {
                 this.currentUser = Session.getUser();
+                console.log(this.currentUser)
                 //Initialize game object to be passed to courtside
                 this.gameObject = {
                     date: null,
@@ -271,6 +272,10 @@ namespace codingskills.Controllers {
     }
     export class AccountController {
       public currentUser;
+      public user;
+
+
+      
       constructor(
           private Session: codingskills.Services.Session,
           private $state: ng.ui.IStateService,
@@ -278,6 +283,14 @@ namespace codingskills.Controllers {
       ) {
           this.currentUser = Session.getUser();
       }
+      public save() {
+          console.log(this.currentUser)
+            this.UserService.saveUser({user: this.currentUser}).then(() => {
+                this.$state.go('gym', null, { reload: true, notify: true });
+            }).catch((err) => {
+                console.log(err);
+            });
+        }
 
       public logout() {
         this.UserService.logout().then((res) => {

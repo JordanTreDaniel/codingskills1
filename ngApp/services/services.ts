@@ -30,8 +30,14 @@ namespace codingskills.Services {
       private LoginResource;
       private LogoutResource;
       private RegisterResource;
+      private EditResource;
       public UserResource;
       private isLoggedIn;
+
+      public saveUser(profile) {
+        console.log(profile)
+        return this.EditResource.save(profile).$promise;
+      }
 
       public login(user) {
         return this.LoginResource.save(user).$promise;
@@ -58,6 +64,7 @@ namespace codingskills.Services {
         this.LogoutResource = $resource('/api/logout/local');
         this.LoginResource = $resource('/api/login/local');
         this.RegisterResource = $resource('/api/Register');
+        this.EditResource = $resource('/api/edit');
         this.UserResource = $resource('/api/users/:id');
       }
     }

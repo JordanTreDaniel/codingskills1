@@ -19,10 +19,21 @@ router.get('/currentuser', (req, res, next) => {
   return res.json(req.user);
 });
 
+router.post('/edit', function(req, res, next) {
+  console.log(req.body.user, "toast");
+  let user = req.body.user;
+  User.update({_id:user._id}, user).then(() => {
+    res.status(200).json({message: "update complete."});
+  }).catch((err) => {
+    console.log(err)
+  })
+})
+
 router.post('/Register', function(req, res, next) {
   let user = new User();
   user.username = req.body.username;
   user.email = req.body.email;
+  user.image = req.body.image;
   user.setPassword(req.body.password);
   user.save(function(err, user) {
     if(err) return next(err);
