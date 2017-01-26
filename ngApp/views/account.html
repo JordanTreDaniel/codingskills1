@@ -1,5 +1,33 @@
-<div align="center">
-    <md-card md-theme="default" layout="column" layout-align="center center" flex="60" align="center">
+<div layout="row" layout-align="center center">
+    <md-card md-theme="default" layout="column" flex="35">
+
+        <md-card-header md-colors="::{backgroundColor: 'default-primary-700'}">
+            <md-card-header-text layout-align="center center">
+                <span class="md-headline" layout-align="center center">Edit</span>
+            </md-card-header-text>
+        </md-card-header>
+        <md-card-content>
+            <form ng-submit="controller.save()">
+                <md-input-container>
+                    <label>Username</label>
+                    <input ng-model="controller.currentUser.username">
+                </md-input-container>
+                <md-input-container>
+                    <label>Bio</label>
+                    <textarea ng-model="controller.currentUser.bio"></textarea>
+                </md-input-container>
+                <md-input-container>
+                    <label>Profile Picture</label>
+                    <input ng-model="controller.currentUser.image">
+                </md-input-container>
+                <md-button type="submit">Save</md-button>
+            </form>
+        </md-card-content>
+        </md-card-header>
+
+    </md-card>
+
+    <md-card md-theme="default" layout="column" flex="50">
         <md-card-content>
             <md-card-header md-colors="::{backgroundColor: 'default-primary-700'}">
                 <md-card-header-text layout-align="center center">
@@ -7,10 +35,12 @@
                 </md-card-header-text>
             </md-card-header>
             <md-card-content>
-                <span> Information on current level and such (TODO)</span>
-                <img ng-src="{{controller.currentUser.image}}" style="max-height:280px" />
+                <div layout="row" layout-align="start start">
+                    <div layout="column" flex="50">{{controller.currentUser.bio}}</div>
+                    <img flex="50" ng-src="{{controller.currentUser.image}}" style="max-height:280px" />
+                </div>
             </md-card-content>
-            <md-card-footer>
-                <span>buttons to edit or go to gym</span>
+            <md-card-footer layout="row" layout-align="center center">
+                <span>info on levels and stuff</span>
             </md-card-footer>
     </md-card>

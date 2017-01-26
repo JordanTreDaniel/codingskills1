@@ -14,7 +14,7 @@ namespace codingskills.Controllers {
 
         logout() {
             this.UserService.logout().then(() => {
-                this.$state.go('account', null, { reload: true, notify: true });
+                this.$state.go('home', null, { reload: true, notify: true });
             }).catch(() => {
                 throw new Error('Unsuccessful logout');
             });
@@ -22,12 +22,71 @@ namespace codingskills.Controllers {
     }
 
     export class GymController {
-
+        constructor(
+            private gameService: codingskills.Services.GameService,
+            private Session: codingskills.Services.Session,
+            private LEVELS,
+            private $state: ng.ui.IStateService,
+            private $stateParams: ng.ui.IStateParamsService
+        ) {
+                this.currentUser = Session.getUser();
+                console.log(this.currentUser)
+                //Initialize game object to be passed to courtside
+                this.gameObject = {
+                    date: new Date(),
+                    mistakes: 0,
+                    wordsTyped: 0,
+                    keysTyped: 0,
+                    accuracy: 0,
+                    gameLength: 10000, // 10 sec default gameLength
+                    levels: [1], // All levels that are included in the game
+                    topLevel: 1, // The highest level of the game
+                    owner: this.currentUser._id,
+                }
+                //I have to check which levels you have completed
+                gameService.get({id: this.currentUser._id}).then((results) => {
+                    //Use your game history to set the levels
+                    for (let x of results.results) {
+                        if (this.gameObject.levels.includes(x['topLevel'])) {
+                            continue;
+                        } else {
+                            this.gameObject.levels.push(x['topLevel']);
+                        }
+                    }
+                    //Levels should be sorted so that I can add most recent level and read it easily
+                    this.gameObject.levels.sort();
+                    //I will progress you through the levels here
+                    let nextLevel = this.gameObject.levels[this.gameObject.levels.length - 1] + 1;
+                    console.log("Current levels are", this.gameObject.levels, "next is", nextLevel);
+                    //Checking to see if you have completed level one,
+                    //and that you haven't completed the last level already
+                    if (results.results.length > 0 && LEVELS[nextLevel]) {
+                        this.gameObject.levels.push(nextLevel);
+                    }
+                    //Update the game object to reflect the highest level that you are on.
+                    this.gameObject.topLevel = this.gameObject.levels[this.gameObject.levels.length - 1];
+                }).catch((err) => {
+                    console.log("Err fetching games", err);
+                });
+                //If you came from the locker room, & clicked next level,
+                //You will automatically start once game has been configured
+                console.log("The stateParams are", $stateParams)
+                console.log($stateParams['automaticallyStart']);
+                if ($stateParams['automaticallyStart']) {
+                    this.startPractice();
+                }
+        }
+        public currentUser;
+        public gameObject;
+        public startPractice() {
+            this.$state.go('courtside', {gameObject: this.gameObject});
+        }
     }
     export class CourtsideController {
         constructor(
             private $http: ng.IHttpService,
             private $state: ng.ui.IStateService,
+            private $stateParams: ng.ui.IStateParamsService,
             private wordService: codingskills.Services.WordService,
             private LEVELS,
             private Session: codingskills.Services.Session,
@@ -37,23 +96,13 @@ namespace codingskills.Controllers {
                 //How could I check to see if the controller has
                 //an actual user right there?
 
-                //I have to check which levels you have completed
-                gameService.get({id: this.currentUser._id}).then((results) => {
-                    console.log("These are the games you've played", results.results);
-                    for (let x in results.results) {
-                        if (this.currentLevels.includes(x['owner'])) {
-                            continue;
-                        } else {
-                            this.currentLevels.push(x['owner']);
-                        }
-                    }
-                    this.currentLevels.sort();
-                });
-                console.log("Current user is", this.currentUser);
+                //Pull the game object from params to configure/track game
+                this.gameObject = $stateParams['gameObject'];
+                console.log("GameObject from params", this.gameObject);
+
+                this.setLetters();
                 this.genWord();
         }
-        //Only include the levels that the user has completed
-        public currentLevels = [1];
         //Set something to hold all lettersMax
         public currentLetters = [];
         //Holds target word to be typed
@@ -62,29 +111,24 @@ namespace codingskills.Controllers {
         //Difference between the word and what you have typed
         public difference;
         public gameRunning = false;
-        //Need current user to set up training session
+
+        //Not sure if we still need current user in this state
         public currentUser;
+
         //To pass to the next state, 
-        //where the average will be calculated
-        public statsObject = {
-            date: new Date(),
-            mistakes: 0,
-            wordsTyped: 0,
-            keysTyped: 0,
-            accuracy: 0,
-            gameLength: 15000
-        }
+        //where the average will be calculated,
+        //after it is recieved from the gym state
+        public gameObject;
+
         //Initiliaze time-loop and stats counting
         public runGame() {
-            if(this.statsObject.wordsTyped == 0 && !this.gameRunning) {
+            if(this.gameObject.wordsTyped == 0 && !this.gameRunning) {
                 this.gameRunning = true;
                 console.log('game started? ', this.gameRunning);
                 let game = window.setTimeout(() => {
-                    //I have to assign these two properties to the game for tracking
-                    this.statsObject.owner = this.currentUser._id;
-                    this.statsObject.level = this.currentLevels[this.currentLevels.length - 1];
-                    this.$state.go('lockerroom', {stats: this.statsObject});
-                        }, this.statsObject.gameLength);
+                    //Send to lockerroom once the game is done.
+                    this.$state.go('lockerroom', {stats: this.gameObject});
+                        }, this.gameObject.gameLength);
             }
         }
         //The substring from this.currentWord of what the user has yet to type
@@ -92,15 +136,14 @@ namespace codingskills.Controllers {
             this.difference = this.currentWord.substring(this.typed.length);
         }
         public setLetters() {
-            for (var i in this.currentLevels) {
-                this.currentLetters = this.currentLetters.concat(this.LEVELS[this.currentLevels[i]]);
+            for (var i in this.gameObject.levels) {
+                this.currentLetters = this.currentLetters.concat(this.LEVELS[this.gameObject.levels[i]]);
             }
         }
         //Sets correct letter set, generates a random word, and sets it to current word
         public genWord() {
             let wordLength = Math.floor(Math.random() * 7) + 1;
             let word = '';
-            this.setLetters();
             for (var i = 0; i < wordLength; i++) {
                 word += this.currentLetters[Math.floor(Math.random() * this.currentLetters.length)];
             }
@@ -119,17 +162,17 @@ namespace codingskills.Controllers {
                 console.log("BACKSPACE!");
             } else {
                 //count the keysTyped
-                this.statsObject.keysTyped++;
+                this.gameObject.keysTyped++;
                 //basically if they made a mistake
                 if (word[typed.length - 1] != typed[typed.length - 1]) {
-                    this.statsObject.mistakes++;
-                    console.log("mistakes: ", this.statsObject.mistakes);
+                    this.gameObject.mistakes++;
+                    console.log("mistakes: ", this.gameObject.mistakes);
                 }
             }
             //Check for correct completion
             if (this.typed === this.currentWord) {
                 //count the wordsTyped
-                this.statsObject.wordsTyped++;
+                this.gameObject.wordsTyped++;
                 //load a new word
                 this.genWord();
                 //empty the typing input
@@ -144,6 +187,8 @@ namespace codingskills.Controllers {
             private gameService: codingskills.Services.GameService
             ) {
                 this.stats = $stateParams['stats'];
+                console.log("The gameObject", this.stats);
+                //I only want you on this state if you just got done practicing
                 if (isNaN(this.stats['accuracy'])) {
                     $state.go('courtside');
                 }
@@ -160,6 +205,10 @@ namespace codingskills.Controllers {
         public keysPerMin;
         public accuracy;
         public stats;
+        public goToGym(bool) {
+            console.log("Going to the gym; Starting?", bool);
+            this.$state.go('gym', {automaticallyStart: bool}, {reload: true});
+        }
         
     }
     export class ScoreboardController {
@@ -167,6 +216,9 @@ namespace codingskills.Controllers {
     }
     export class AccountController {
       public currentUser;
+      public user;
+
+
       
       constructor(
           private Session: codingskills.Services.Session,
@@ -175,6 +227,14 @@ namespace codingskills.Controllers {
       ) {
           this.currentUser = Session.getUser();
       }
+      public save() {
+          console.log(this.currentUser)
+            this.UserService.saveUser({user: this.currentUser}).then(() => {
+                this.$state.go('gym', null, { reload: true, notify: true });
+            }).catch((err) => {
+                console.log(err);
+            });
+        }
 
       public logout() {
         this.UserService.logout().then((res) => {
@@ -216,7 +276,7 @@ namespace codingskills.Controllers {
         public currentUser;
         public login(user) {
             this.UserService.login(user).then((res) => {
-                this.$state.go('account', null, { reload: true, notify: true });
+                this.$state.go('gym', null, { reload: true, notify: true });
             }).catch((err) => {
                 alert('Bunk login, please try again.');
             });

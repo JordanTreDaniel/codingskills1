@@ -10,6 +10,7 @@ import * as cookieParser from 'cookie-parser';
 import * as passport from 'passport';
 import * as session from 'express-session';
 import {User, IUser} from './models/Users';
+import {Profile, IProfile} from './models/Users';
 import gamesAPI from './api/games';
 const MongoStore = require('connect-mongo')(session);
 
@@ -86,6 +87,8 @@ app.use(passport.session());
 app.use('/api', require('./api/users'));
 app.use('/', require('./routes/index'));
 app.use('/users', require('./api/users'));
+
+
 app.use('/api/words', require('./api/words'));
 app.use('/api/games', gamesAPI);
 // redirect 404 to home for the sake of AngularJS client-side routes

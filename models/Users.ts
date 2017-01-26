@@ -8,10 +8,18 @@ export interface IFacebook {
   email: string
 }
 
+export interface IProfile extends mongoose.Document {
+  bio: { type: String},
+  image: {type: String},
+  owner: {type: String} 
+
+}
+
 export interface IUser extends mongoose.Document {
   username: { type: String, lowercase: true, unique: true},
   email: { type: String, unique: true, lowercase: true },
-  image: { type: String}
+  image: { type: String},
+  bio: { type: String},
   passwordHash: String,
   salt: String,
   facebookId: String,
@@ -22,10 +30,17 @@ export interface IUser extends mongoose.Document {
   roles: Array<String>
 }
 
+let ProfileSchema = new mongoose.Schema({
+  bio: { type:String },
+  image: { type: String, default: "https://diasp.eu/assets/user/default.png"},
+  owner: String,
+  
+})
+
 let UserSchema = new mongoose.Schema({
   username: { type: String, lowercase: true, unique: true},
   email: { type: String, unique: true, lowercase: true },
-  image: { type: String, default: "https://diasp.eu/assets/user/default.png"},
+  bio: {type: String},
   passwordHash: String,
   salt: String,
   facebookId: String,
@@ -56,4 +71,5 @@ UserSchema.method('generateJWT', function() {
   }, process.env.JWT_SECRET, {expiresIn: '2 days'});
 });
 
+export const Profile = mongoose.model<IProfile>("Profile", ProfileSchema);
 export const User = mongoose.model<IUser>("User", UserSchema);
