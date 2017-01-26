@@ -265,7 +265,7 @@ namespace codingskills.Controllers {
         public formErr;
         public login(user) {
             this.UserService.login(user).then((res) => {
-                this.$state.go('account', null, { reload: true, notify: true });
+                this.$state.go('gym', null, { reload: true, notify: true });
             }).catch((err) => {
                 this.formErr = "Bad login"
             });
@@ -273,8 +273,7 @@ namespace codingskills.Controllers {
 
         public register(user) {
             this.UserService.register(user).then((res) => {
-                alert('please login');
-                this.$state.go('home', null, { reload: true, notify: true });
+                this.login(user);
             }).catch((err) => {
                 this.formErr = "Error registering. This is usually caused by trying to register an email or username that already exists."
             });
