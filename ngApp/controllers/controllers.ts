@@ -44,21 +44,29 @@ namespace codingskills.Controllers {
                 }
                 //I have to check which levels you have completed
                 gameService.get({id: this.currentUser._id}).then((results) => {
+                    //I sort and store your games for display
+                    this.games = results.results;
                     //Use your game history to set the levels
-                    for (let x of results.results) {
+                    for (let x of this.games) {
                         if (this.gameObject.levels.includes(x['topLevel'])) {
                             continue;
                         } else {
                             this.gameObject.levels.push(x['topLevel']);
                         }
                     }
+                    //I want the most recent games returned first
+                    this.games.sort((a, b) => {
+                        return Date.parse(b.date) - Date.parse(a.date);
+                    });
+                    //I only want the last five games to be displayed
+                    this.games.splice(5);
                     //Levels should be sorted so that I can add most recent level and read it easily
                     this.gameObject.levels.sort();
                     //I will progress you through the levels here
                     let nextLevel = this.gameObject.levels[this.gameObject.levels.length - 1] + 1;
                     //Checking to see if you have completed level one,
                     //and that you haven't completed the last level already
-                    if (results.results.length > 0 && LEVELS[nextLevel]) {
+                    if (this.games.length > 0 && LEVELS[nextLevel]) {
                         this.gameObject.levels.push(nextLevel);
                     }
                     //Update the game object to reflect the highest level that you are on.
@@ -75,8 +83,34 @@ namespace codingskills.Controllers {
         }
         public currentUser;
         public gameObject;
+        public games;
         public startPractice() {
             this.$state.go('courtside', {gameObject: this.gameObject});
+        }
+        public howLongAgo(date) {
+            let difference = Date.now() - Date.parse(date);
+            let time = {
+                day: 0,
+                hour: 0,
+                minute: 0, 
+                second: 0
+            }
+            time.day = parseInt((difference / (1000 * 60 * 60 * 24)).toFixed(0));
+            difference = difference % (1000 * 60 * 60 * 24);
+            time.hour = parseInt((difference / (1000 * 60 * 60)).toFixed(0));
+            difference = difference % (1000 * 60 * 60);
+            time.minute = parseInt((difference / (1000 * 60)).toFixed(0));
+            difference = difference % (1000 * 60);
+            time.second = parseInt((difference / (1000)).toFixed(0));
+            var x = 0;
+            for (let i in time) {
+                if (time[i] > 0 && time[i] < 2) {
+                    return (`${time[i]} ${Object.keys(time)[x]}`)
+                } else if (time[i] > 1) {
+                    return (`${time[i]} ${Object.keys(time)[x]}s`)                    
+                }
+                x++;
+            }
         }
     }
     export class CourtsideController {
