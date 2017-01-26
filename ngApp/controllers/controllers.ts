@@ -32,7 +32,7 @@ namespace codingskills.Controllers {
                 this.currentUser = Session.getUser();
                 //Initialize game object to be passed to courtside
                 this.gameObject = {
-                    date: new Date(),
+                    date: null,
                     mistakes: 0,
                     wordsTyped: 0,
                     keysTyped: 0,
@@ -69,6 +69,10 @@ namespace codingskills.Controllers {
                     if (this.games.length > 0 && LEVELS[nextLevel]) {
                         this.gameObject.levels.push(nextLevel);
                     }
+                    //How to stop you from selecting a level you haven't unlocked
+                    for (let i of this.gameObject.levels) {
+                        this.usersLevelsAccess.push(i);
+                    }
                     //Update the game object to reflect the highest level that you are on.
                     this.gameObject.topLevel = this.gameObject.levels[this.gameObject.levels.length - 1];
 
@@ -84,13 +88,37 @@ namespace codingskills.Controllers {
         public currentUser;
         public gameObject;
         public games;
+        private usersLevelsAccess = [];
         public startPractice() {
             this.$state.go('courtside', {gameObject: this.gameObject});
         }
+        public retry(game) {
+            this.gameObject.levels = game.levels;
+            this.gameObject.topLevel = game.topLevel;
+            this.startPractice();
+        }
+        public inOrExcludeLevel(level) {
+            //If it is in, take it out
+            if (this.gameObject.levels.includes(level)) {
+                this.gameObject.levels.splice(this.gameObject.levels.indexOf(level), 1);
+            // If it is out, put it in and sort
+            } else {
+                this.gameObject.levels.push(level);
+                this.gameObject.levels.sort();
+            }
+            //I already know they're gonna try to include no levels to break our application,
+            //So you will end up on level one if you try it
+            if (this.gameObject.levels.length < 1) {
+                this.gameObject.levels = [1];
+            }
+            //Set the topLevel property to be correct
+            this.gameObject.topLevel = this.gameObject.levels[this.gameObject.levels.length - 1];
+        }
+        //Function to tell you you played a game x unitsOfTime ago
         public howLongAgo(date) {
             //How much time since you played vs now
             let difference = Date.now() - Date.parse(date);
-            //I want the object to have the properties in this specific order,
+            //I want the object to have time units in decreasing order,
             //each prop contains the amount of milliseconds to make one of itself
             let time = {
                 day: (1000 * 60 * 60 * 24),
@@ -129,7 +157,6 @@ namespace codingskills.Controllers {
 
                 //Pull the game object from params to configure/track game
                 this.gameObject = $stateParams['gameObject'];
-
                 this.setLetters();
                 this.genWord();
         }
@@ -154,6 +181,7 @@ namespace codingskills.Controllers {
         public runGame() {
             if(this.gameObject.wordsTyped == 0 && !this.gameRunning) {
                 this.gameRunning = true;
+                this.gameObject.date = new Date();                
                 let game = window.setTimeout(() => {
                     //Send to lockerroom once the game is done.
                     this.$state.go('lockerroom', {stats: this.gameObject});
