@@ -60,7 +60,7 @@ namespace codingskills.Controllers {
                     });
                     //I only want the last five games to be displayed
                     this.games.splice(5);
-                    //Levels should be sorted so that I can add most recent level and read it easily
+                    //Levels should be sorted so that I can add most recent level number and read it easily
                     this.gameObject.levels.sort();
                     //I will progress you through the levels here
                     let nextLevel = this.gameObject.levels[this.gameObject.levels.length - 1] + 1;
@@ -88,22 +88,22 @@ namespace codingskills.Controllers {
             this.$state.go('courtside', {gameObject: this.gameObject});
         }
         public howLongAgo(date) {
+            //How much time since you played vs now
             let difference = Date.now() - Date.parse(date);
+            //I want the object to have the properties in this specific order,
+            //each prop contains the amount of milliseconds to make one of itself
             let time = {
-                day: 0,
-                hour: 0,
-                minute: 0, 
-                second: 0
+                day: (1000 * 60 * 60 * 24),
+                hour: (1000 * 60 * 60),
+                minute: (1000 * 60), 
+                second: (1000)
             }
-            time.day = parseInt((difference / (1000 * 60 * 60 * 24)).toFixed(0));
-            difference = difference % (1000 * 60 * 60 * 24);
-            time.hour = parseInt((difference / (1000 * 60 * 60)).toFixed(0));
-            difference = difference % (1000 * 60 * 60);
-            time.minute = parseInt((difference / (1000 * 60)).toFixed(0));
-            difference = difference % (1000 * 60);
-            time.second = parseInt((difference / (1000)).toFixed(0));
+            //variable to access the time obj's keys in order
             var x = 0;
+            //return the largest unit of time that isn't 0
+            //after calculating the amount of days>hours>...
             for (let i in time) {
+                time[i] = parseInt((difference / time[i]).toFixed(0));
                 if (time[i] > 0 && time[i] < 2) {
                     return (`${time[i]} ${Object.keys(time)[x]}`)
                 } else if (time[i] > 1) {
