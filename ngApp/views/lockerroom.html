@@ -1,16 +1,22 @@
-This is the Locker Room, 
-The place where we will show the player how they did in the game.
-<h2>Congratulations!!</h2>
-<h3>You typed at {{controller.wordsPerMin}} words per minute</h3>
-<h3>You typed at {{controller.keysPerMin}} keys per minute</h3>
-<h3>You made {{controller.stats.mistakes}} mistakes</h3>
-<h3>You were {{controller.accuracy}}% accurate</h3>
+<div layout="row" layout-align="center center">
+    <md-card flex="65">
+        <md-card-header md-colors="::{backgroundColor: 'default-primary-700'}">
+            <md-card-header-text layout-align="center center">
+                <h2>The Results Are In!</h2>
+            </md-card-header-text>
+        </md-card-header>
+        <h3>You typed at {{controller.wordsPerMin}} words per minute</h3>
+        <h3>You typed at {{controller.keysPerMin}} keys per minute</h3>
+        <h3>You made {{controller.stats.mistakes}} mistakes</h3>
+        <h3>You were {{controller.accuracy}}% accurate</h3>
 
-<div layout="row">
-    <md-button class="md-raised md-primary" ng-click="controller.goToGym(true)">
-        Next level
-    </md-button>
-    <md-button class="md-raised md-primary" ng-click="controller.goToGym(false)">
-        Back to Gym
-    </md-button>
+        <div layout="row" layout-align="center center">
+            <md-button class="md-raised md-primary" ng-click="controller.goToGym(true)">
+                Next level
+            </md-button>
+            <md-button class="md-raised md-primary" ng-click="controller.goToGym(false)">
+                Back to Gym
+            </md-button>
+        </div>
+    </md-card>
 </div>
