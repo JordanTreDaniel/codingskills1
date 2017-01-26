@@ -56,7 +56,6 @@ namespace codingskills.Controllers {
                     this.gameObject.levels.sort();
                     //I will progress you through the levels here
                     let nextLevel = this.gameObject.levels[this.gameObject.levels.length - 1] + 1;
-                    console.log("Current levels are", this.gameObject.levels, "next is", nextLevel);
                     //Checking to see if you have completed level one,
                     //and that you haven't completed the last level already
                     if (results.results.length > 0 && LEVELS[nextLevel]) {
@@ -64,16 +63,15 @@ namespace codingskills.Controllers {
                     }
                     //Update the game object to reflect the highest level that you are on.
                     this.gameObject.topLevel = this.gameObject.levels[this.gameObject.levels.length - 1];
+
+                    //If you came from the locker room, & clicked next level,
+                    //You will automatically start once game has been configured
+                    if ($stateParams['automaticallyStart'] === true) {
+                        this.startPractice();
+                }
                 }).catch((err) => {
                     console.log("Err fetching games", err);
                 });
-                //If you came from the locker room, & clicked next level,
-                //You will automatically start once game has been configured
-                console.log("The stateParams are", $stateParams)
-                console.log($stateParams['automaticallyStart']);
-                if ($stateParams['automaticallyStart']) {
-                    this.startPractice();
-                }
         }
         public currentUser;
         public gameObject;
@@ -97,7 +95,6 @@ namespace codingskills.Controllers {
 
                 //Pull the game object from params to configure/track game
                 this.gameObject = $stateParams['gameObject'];
-                console.log("GameObject from params", this.gameObject);
 
                 this.setLetters();
                 this.genWord();
@@ -123,7 +120,6 @@ namespace codingskills.Controllers {
         public runGame() {
             if(this.gameObject.wordsTyped == 0 && !this.gameRunning) {
                 this.gameRunning = true;
-                console.log('game started? ', this.gameRunning);
                 let game = window.setTimeout(() => {
                     //Send to lockerroom once the game is done.
                     this.$state.go('lockerroom', {stats: this.gameObject});
@@ -136,8 +132,10 @@ namespace codingskills.Controllers {
         }
         public setLetters() {
             for (var i in this.gameObject.levels) {
+                console.log("Thisis the level iteration", this.gameObject.levels[i]);                
                 this.currentLetters = this.currentLetters.concat(this.LEVELS[this.gameObject.levels[i]]);
             }
+            console.log("The current letters are", this.currentLetters);
         }
         //Sets correct letter set, generates a random word, and sets it to current word
         public genWord() {
@@ -186,7 +184,6 @@ namespace codingskills.Controllers {
             private gameService: codingskills.Services.GameService
             ) {
                 this.stats = $stateParams['stats'];
-                console.log("The gameObject", this.stats);
                 //I only want you on this state if you just got done practicing
                 if (isNaN(this.stats['accuracy'])) {
                     $state.go('courtside');
@@ -194,9 +191,7 @@ namespace codingskills.Controllers {
                 this.wordsPerMin = (this.stats['wordsTyped'] * (60/this.stats.gameLength) * 1000);
                 this.keysPerMin = (this.stats['keysTyped'] * (60/this.stats.gameLength) * 1000);
                 this.accuracy = this.stats.accuracy = Math.floor((((this.stats['keysTyped'] - this.stats['mistakes']) * 100 / this.stats['keysTyped'])));
-                gameService.save({game: this.stats}).then((results) => {
-                    console.log("All saved", results);
-                }).catch((err) => {
+                gameService.save({game: this.stats}).catch((err) => {
                     console.log("Err saving the game");
                 })
         }
@@ -205,7 +200,6 @@ namespace codingskills.Controllers {
         public accuracy;
         public stats;
         public goToGym(bool) {
-            console.log("Going to the gym; Starting?", bool);
             this.$state.go('gym', {automaticallyStart: bool}, {reload: true});
         }
         
