@@ -33,7 +33,7 @@ namespace codingskills.Controllers {
                 console.log(this.currentUser)
                 //Initialize game object to be passed to courtside
                 this.gameObject = {
-                    date: new Date(),
+                    date: null,
                     mistakes: 0,
                     wordsTyped: 0,
                     keysTyped: 0,
@@ -45,41 +45,101 @@ namespace codingskills.Controllers {
                 }
                 //I have to check which levels you have completed
                 gameService.get({id: this.currentUser._id}).then((results) => {
+                    //I sort and store your games for display
+                    this.games = results.results;
                     //Use your game history to set the levels
-                    for (let x of results.results) {
+                    for (let x of this.games) {
                         if (this.gameObject.levels.includes(x['topLevel'])) {
                             continue;
                         } else {
                             this.gameObject.levels.push(x['topLevel']);
                         }
                     }
-                    //Levels should be sorted so that I can add most recent level and read it easily
+                    //I want the most recent games returned first
+                    this.games.sort((a, b) => {
+                        return Date.parse(b.date) - Date.parse(a.date);
+                    });
+                    //I only want the last five games to be displayed
+                    this.games.splice(5);
+                    //Levels should be sorted so that I can add most recent level number and read it easily
                     this.gameObject.levels.sort();
                     //I will progress you through the levels here
                     let nextLevel = this.gameObject.levels[this.gameObject.levels.length - 1] + 1;
-                    console.log("Current levels are", this.gameObject.levels, "next is", nextLevel);
                     //Checking to see if you have completed level one,
                     //and that you haven't completed the last level already
-                    if (results.results.length > 0 && LEVELS[nextLevel]) {
+                    if (this.games.length > 0 && LEVELS[nextLevel]) {
                         this.gameObject.levels.push(nextLevel);
+                    }
+                    //How to stop you from selecting a level you haven't unlocked
+                    for (let i of this.gameObject.levels) {
+                        this.usersLevelsAccess.push(i);
                     }
                     //Update the game object to reflect the highest level that you are on.
                     this.gameObject.topLevel = this.gameObject.levels[this.gameObject.levels.length - 1];
+
+                    //If you came from the locker room, & clicked next level,
+                    //You will automatically start once game has been configured
+                    if ($stateParams['automaticallyStart'] === true) {
+                        this.startPractice();
+                }
                 }).catch((err) => {
                     console.log("Err fetching games", err);
                 });
-                //If you came from the locker room, & clicked next level,
-                //You will automatically start once game has been configured
-                console.log("The stateParams are", $stateParams)
-                console.log($stateParams['automaticallyStart']);
-                if ($stateParams['automaticallyStart']) {
-                    this.startPractice();
-                }
         }
         public currentUser;
         public gameObject;
+        public games;
+        private usersLevelsAccess = [];
         public startPractice() {
             this.$state.go('courtside', {gameObject: this.gameObject});
+        }
+        public retry(game) {
+            this.gameObject.levels = game.levels;
+            this.gameObject.topLevel = game.topLevel;
+            this.startPractice();
+        }
+        public inOrExcludeLevel(level) {
+            //If it is in, take it out
+            if (this.gameObject.levels.includes(level)) {
+                this.gameObject.levels.splice(this.gameObject.levels.indexOf(level), 1);
+            // If it is out, put it in and sort
+            } else {
+                this.gameObject.levels.push(level);
+                this.gameObject.levels.sort();
+            }
+            //I already know they're gonna try to include no levels to break our application,
+            //So you will end up on level one if you try it
+            if (this.gameObject.levels.length < 1) {
+                this.gameObject.levels = [1];
+            }
+            //Set the topLevel property to be correct
+            this.gameObject.topLevel = this.gameObject.levels[this.gameObject.levels.length - 1];
+        }
+        //Function to tell you you played a game x unitsOfTime ago
+        public howLongAgo(date) {
+            //How much time since you played vs now
+            let difference = Date.now() - Date.parse(date);
+            //I want the object to have time units in decreasing order,
+            //each prop contains the amount of milliseconds to make one of itself
+            let time = {
+                day: (1000 * 60 * 60 * 24),
+                hour: (1000 * 60 * 60),
+                minute: (1000 * 60), 
+                second: (1000)
+            }
+            //variable to access the time obj's keys in order
+            var x = 0;
+            //return the largest unit of time that isn't 0
+            //after calculating the amount of days>hours>...
+            for (let i in time) {
+                time[i] = parseInt((difference / time[i]).toFixed(0));
+                if (time[i] > 0 && time[i] < 2) {
+                    return (`${time[i]} ${Object.keys(time)[x]}`)
+                } else if (time[i] > 1) {
+                    return (`${time[i]} ${Object.keys(time)[x]}s`)                    
+                }
+                x++;
+            }
         }
     }
     export class CourtsideController {
@@ -98,8 +158,6 @@ namespace codingskills.Controllers {
 
                 //Pull the game object from params to configure/track game
                 this.gameObject = $stateParams['gameObject'];
-                console.log("GameObject from params", this.gameObject);
-
                 this.setLetters();
                 this.genWord();
         }
@@ -124,7 +182,7 @@ namespace codingskills.Controllers {
         public runGame() {
             if(this.gameObject.wordsTyped == 0 && !this.gameRunning) {
                 this.gameRunning = true;
-                console.log('game started? ', this.gameRunning);
+                this.gameObject.date = new Date();                
                 let game = window.setTimeout(() => {
                     //Send to lockerroom once the game is done.
                     this.$state.go('lockerroom', {stats: this.gameObject});
@@ -137,8 +195,10 @@ namespace codingskills.Controllers {
         }
         public setLetters() {
             for (var i in this.gameObject.levels) {
+                console.log("Thisis the level iteration", this.gameObject.levels[i]);                
                 this.currentLetters = this.currentLetters.concat(this.LEVELS[this.gameObject.levels[i]]);
             }
+            console.log("The current letters are", this.currentLetters);
         }
         //Sets correct letter set, generates a random word, and sets it to current word
         public genWord() {
@@ -187,7 +247,6 @@ namespace codingskills.Controllers {
             private gameService: codingskills.Services.GameService
             ) {
                 this.stats = $stateParams['stats'];
-                console.log("The gameObject", this.stats);
                 //I only want you on this state if you just got done practicing
                 if (isNaN(this.stats['accuracy'])) {
                     $state.go('courtside');
@@ -195,9 +254,7 @@ namespace codingskills.Controllers {
                 this.wordsPerMin = (this.stats['wordsTyped'] * (60/this.stats.gameLength) * 1000);
                 this.keysPerMin = (this.stats['keysTyped'] * (60/this.stats.gameLength) * 1000);
                 this.accuracy = this.stats.accuracy = Math.floor((((this.stats['keysTyped'] - this.stats['mistakes']) * 100 / this.stats['keysTyped'])));
-                gameService.save({game: this.stats}).then((results) => {
-                    console.log("All saved", results);
-                }).catch((err) => {
+                gameService.save({game: this.stats}).catch((err) => {
                     console.log("Err saving the game");
                 })
         }
@@ -206,7 +263,6 @@ namespace codingskills.Controllers {
         public accuracy;
         public stats;
         public goToGym(bool) {
-            console.log("Going to the gym; Starting?", bool);
             this.$state.go('gym', {automaticallyStart: bool}, {reload: true});
         }
         
@@ -274,11 +330,13 @@ namespace codingskills.Controllers {
         public newUser;
         public isLoggedIn;
         public currentUser;
+        public formWorking = false;
+        public formErr;
         public login(user) {
             this.UserService.login(user).then((res) => {
                 this.$state.go('gym', null, { reload: true, notify: true });
             }).catch((err) => {
-                alert('Bunk login, please try again.');
+                this.formErr = "Bad login"
             });
         }
 
@@ -287,7 +345,7 @@ namespace codingskills.Controllers {
                 alert('please login');
                 this.$state.go('home', null, { reload: true, notify: true });
             }).catch((err) => {
-                alert('Registration error: please try again.');
+                this.formErr = "Error registering. This is usually caused by trying to register an email or username that already exists."
             });
         }
 
@@ -298,7 +356,15 @@ namespace codingskills.Controllers {
               console.log(err);
           });
         }
-
+        public formWorkTrue() {
+            this.formWorking = true;
+        }
+        public formWorkFalse() {
+            this.formWorking = false;
+        }
+        public clearErrMsg() {
+            this.formErr = "";
+        }
         constructor(
             private UserService: codingskills.Services.UserService,
             private $state: ng.ui.IStateService,

@@ -9,6 +9,16 @@ body {
 .md-button {
     font-size: 16px;
     font-family: Arial, Helvetica, sans-serif;
+<<<<<<< HEAD
     background-color: grey;
     color: whitesmoke;
+=======
+    background-color: #38761D;
+    color: lightgray;
+}
+
+.formError {
+    color: red;
+    font-weight: bold;
+>>>>>>> eb27bdc58d251beb7ec76e10c09e66056375f382
 }

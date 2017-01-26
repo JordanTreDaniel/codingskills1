@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div align="center" ng-if="controller.currentUser">
     <md-card md-theme="default" layout="column" flex="60">
         <md-card-content>
@@ -28,3 +29,63 @@
         </div>
 </div>
 </md-card>
+=======
+
+
+<div layout="row" layout-align="center center" layout-wrap>
+    <!--This is the div for all of the user's stats, history, and progress-->
+    <div flex='90' layout="column">
+        <h1>Levels</h1>
+        <!--This div contains level cards-->
+        <div layout='row' layout-wrap>
+            <md-card ng-repeat="level in controller.LEVELS">
+                <md-card-title>
+                    <md-card-title-text class="md-headline">
+                        Level {{$index + 1}}
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>   
+                    <span ng-repeat="char in level">{{char}} </span>
+                </md-card-content>
+                <md-card-actions>
+                    <md-checkbox ng-disabled="!controller.usersLevelsAccess.includes($index + 1)" 
+                        ng-click="controller.inOrExcludeLevel($index + 1)"
+                        ng-checked="controller.gameObject.levels.includes($index + 1)">
+                        Practice!
+                    </md-checkbox>
+                </md-card-actions>
+            </md-card>
+            <div flex="50">
+                <md-button class="md-raised md-accent"><a ng-click="controller.startPractice()">Start Practicing</a></md-button>
+            </div>
+            <div flex="50">
+                <md-button class="md-raised md-accent"><a ui-sref="scoreboard">View the Stats</a></md-button>        
+            </div>
+        </div>
+        <h1>Previous Games</h1>
+        <!--This is the div to show the user their previous games-->        
+        <div layout="row" layout-wrap>
+            <md-card ng-repeat="game in controller.games">
+                <md-card-title>
+                    <md-card-title-text class="md-headline">
+                        Level {{game.topLevel}} game
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>   
+                    <span>Words Typed: {{game.wordsTyped}}</span><br>
+                    <span>Keys Typed: {{game.keysTyped}}</span><br>
+                    <span>Accuracy: {{game.accuracy}}%</span><br>
+                    <span>Game Time: {{game.gameLength/1000}} seconds</span><br>
+                    <!--This is the line of code I used to tell you how long ago you played-->
+                    <span>Played: {{controller.howLongAgo(game.date)}} ago</span> <br>
+                </md-card-content>
+                <md-card-actions>
+                    <md-button ng-click="controller.retry(game)">Retry</md-button>
+                </md-card-actions>
+            </md-card>
+        </div>
+    </div>
+    
+    
+</div> 
+>>>>>>> eb27bdc58d251beb7ec76e10c09e66056375f382
