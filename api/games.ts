@@ -1,9 +1,21 @@
 import * as express from 'express';
 import Game from '../models/Game';
+import {User, IUser } from './../models/Users';
 
 let router = express.Router();
 
-router.get('/:id', (req, res, next) => {
+//To validate users for use of api routes
+let userCheck = (req, res, next) => {
+    //Pull the user from the request obj
+    for (let x of req.user['roles']) {
+        if (x === 'user') {
+        return next();
+        } 
+    }
+    res.status(401).send({message: "Unauthorized"});
+}
+
+router.get('/:id', userCheck, (req, res, next) => {
     let id = req.params.id;
     Game.find({owner: id}).then((results) => {
         res.json({results: results});

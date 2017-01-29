@@ -49,7 +49,7 @@ namespace codingskills {
               controllerAs: 'controller',
               params: {automaticallyStart: false},
               parent: 'nav',
-              data: {authorizedRoles: true}
+              data: {authorizedRoles: 'user'}
           })
 
           
@@ -67,7 +67,7 @@ namespace codingskills {
               controllerAs: 'controller',
               params: {gameObject: {}},
               parent: 'nav',
-              data: {authorizedRoles: true}
+              data: {authorizedRoles: 'user'}
           })
           .state('lockerroom', {
               url: '/lockerroom',
@@ -76,7 +76,7 @@ namespace codingskills {
               controllerAs: 'controller',
               params: {stats: {}},
               parent: 'nav',
-              data: {authorizedRoles: true}
+              data: {authorizedRoles: 'user'}
           })
 
 
@@ -89,7 +89,7 @@ namespace codingskills {
               controller: codingskills.Controllers.AccountController,
               parent: 'nav',
               controllerAs: 'controller',
-              data: {authorizedRoles: true}
+              data: {authorizedRoles: 'user'}
           })
           .state('myaccount', {
               url: '/:username',
@@ -97,7 +97,7 @@ namespace codingskills {
               controller: codingskills.Controllers.MyAccountController,
               controllerAs: "controller",
               parent: 'account',
-              data: {authorizedRoles: true}
+              data: {authorizedRoles: 'user'}
           })
        
 
@@ -204,7 +204,7 @@ namespace codingskills {
               } 
             }
           });
-        }
+        } 
       ]
     );
 }

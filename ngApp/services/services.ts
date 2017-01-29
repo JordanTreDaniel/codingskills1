@@ -1,3 +1,4 @@
+
 namespace codingskills.Services {
     export class WordService {
         constructor($resource: ng.resource.IResourceService) {
@@ -101,13 +102,12 @@ namespace codingskills.Services {
         //I changed the if to check for regular users
         return roles.some((v, k) => {
           for(let i in user['roles']) {
-            if (user['roles'][i] === 'user') {
+            if (user['roles'][i] === v) {
               return true;
             }
           }
         }); 
       }
-
       getUser() {
         return this.$sessionStorage['user'] || {};
       }

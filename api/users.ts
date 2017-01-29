@@ -6,6 +6,7 @@ import * as session from 'express-session';
 import {User, IUser } from './../models/Users';
 let router = express.Router();
 
+
 router.get('/users/:id', function(req, res, next) {
   User.findOne(req.params._id).select('-passwordHash -salt').then((user) => {
     return res.status(200).json(user);
