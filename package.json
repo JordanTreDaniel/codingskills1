@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "tsc": "tsc -w"
+    "tsc": "tsc -w",
+    "preinstall": "npm i typescript@2.1.5 && npm i bower",
+    "postinstall": "tsc && bower i"
   },
   "dependencies": {
     "@types/angular": "^1.5.13",
@@ -53,5 +55,8 @@
     "passport-facebook": "^2.1.1",
     "passport-local": "^1.0.0",
     "serve-favicon": "~2.3.0"
+  },
+  "engines": {
+    "node": "6.9.4"
   }
 }
