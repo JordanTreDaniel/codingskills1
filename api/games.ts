@@ -6,11 +6,12 @@ let router = express.Router();
 
 //To validate users for use of api routes
 let userCheck = (req, res, next) => {
+    if (!req.user) return res.status(401).send({message: "Unauthorized"});
     //Pull the user from the request obj
     for (let x of req.user['roles']) {
         if (x === 'user') {
-        return next();
-        } 
+          return next();
+        }
     }
     res.status(401).send({message: "Unauthorized"});
 }
